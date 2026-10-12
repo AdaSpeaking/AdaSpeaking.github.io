@@ -29,10 +29,10 @@ content:
         options:
           values:
             - { name: marketing, label: 行銷工具 }
-            - { name: automation, label: 自動化工具 }
             - { name: analytics, label: 數據分析工具 }
             - { name: toys, label: 自製小玩具 }
             - { name: 360d, label: 才庫相關 }
+            - { name: survey, label: 各種問卷調查 }
       - name: tool_url
         label: 工具網址（有填才會出現在工具清單；自己的頁面寫 /repo名稱/）
         type: string
@@ -72,6 +72,7 @@ content:
                 - { name: chart, label: 長條圖 }
                 - { name: dice, label: 骰子 }
                 - { name: building, label: 大樓 }
+                - { name: clipboard, label: 問卷夾板 }
                 - { name: pen, label: 筆 }
                 - { name: star, label: 星星 }
                 - { name: folder, label: 資料夾 }

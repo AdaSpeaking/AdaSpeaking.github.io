@@ -2,9 +2,6 @@ categories:
   - key: marketing
     name: 行銷工具
     icon: megaphone
-  - key: automation
-    name: 自動化工具
-    icon: gear
   - key: analytics
     name: 數據分析工具
     icon: chart
@@ -14,3 +11,6 @@ categories:
   - key: 360d
     name: 才庫相關
     icon: building
+  - key: survey
+    name: 各種問卷調查
+    icon: clipboard
