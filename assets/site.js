@@ -20,19 +20,6 @@
   document.getElementById('toggleMobile').addEventListener('click', function () { setOpen(true); });
   document.getElementById('scrim').addEventListener('click', function () { setOpen(false); });
 
-  // 分類：收合狀態下點圖示 → 展開側欄並打開該分類
-  document.querySelectorAll('.cat-head').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var cat = btn.parentElement;
-      if (!body.classList.contains('open')) {
-        setOpen(true);
-        cat.classList.add('expanded');
-      } else {
-        cat.classList.toggle('expanded');
-      }
-      btn.setAttribute('aria-expanded', cat.classList.contains('expanded'));
-    });
-  });
   // 文章清單／工具清單：依 ?c= 只顯示該分類
   var c = new URLSearchParams(location.search).get('c');
   var sections = document.querySelectorAll('.cat-section');
@@ -46,13 +33,8 @@
       var h1 = document.querySelector('.list-title');
       h1.textContent = hit.dataset.name + '・' + (listType === 'tools' ? '工具清單' : '文章清單');
       document.title = h1.textContent + '｜Ada\'s Workbench';
-      var nav = document.querySelector('[data-nav="' + listType + '-' + c + '"]');
-      if (nav) {
-        nav.classList.add('active');
-        var parent = nav.closest('.cat');
-        parent.classList.add('expanded');
-        parent.querySelector('.cat-head').setAttribute('aria-expanded', 'true');
-      }
+      var nav = document.querySelector('[data-nav="articles-' + c + '"]');
+      if (listType === 'articles' && nav) nav.classList.add('active');
     }
   }
 })();

@@ -7,18 +7,16 @@
   </div>
 
   <nav class="cats">
+    <a class="cat-head{% if page.list_type == 'tools' %} active{% endif %}" href="/tools/" title="所有工具清單" data-nav="tools">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
+      <span class="cat-name">所有工具清單</span>
+    </a>
+    <div class="nav-sep"></div>
     {% for cat in site.data.nav.categories %}
-    <div class="cat{% if cat.open %} expanded{% endif %}" data-cat="{{ cat.key }}">
-      <button class="cat-head" aria-expanded="{% if cat.open %}true{% else %}false{% endif %}" title="{{ cat.name }}">
-        {% include icon.html name=cat.icon %}
-        <span class="cat-name">{{ cat.name }}</span>
-        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
-      </button>
-      <div class="cat-items">
-        <a class="item" href="/articles/?c={{ cat.key }}" data-nav="articles-{{ cat.key }}">文章清單</a>
-        <a class="item" href="/tools/?c={{ cat.key }}" data-nav="tools-{{ cat.key }}">工具清單</a>
-      </div>
-    </div>
+    <a class="cat-head{% if page.cat == cat.key %} active{% endif %}" href="/articles/?c={{ cat.key }}" title="{{ cat.name }}" data-nav="articles-{{ cat.key }}">
+      {% include icon.html name=cat.icon %}
+      <span class="cat-name">{{ cat.name }}</span>
+    </a>
     {% endfor %}
   </nav>
 

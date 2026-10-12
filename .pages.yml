@@ -75,6 +75,3 @@ content:
                 - { name: pen, label: 筆 }
                 - { name: star, label: 星星 }
                 - { name: folder, label: 資料夾 }
-          - name: open
-            label: 預設展開
-            type: boolean

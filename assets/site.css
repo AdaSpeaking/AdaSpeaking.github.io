@@ -55,7 +55,7 @@
   nav.cats { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0 8px; }
   .cat { margin-bottom: 4px; }
   .cat-head {
-    width: 100%; display: flex; align-items: center; gap: 10px;
+    width: 100%; display: flex; text-decoration: none; margin-bottom: 4px; align-items: center; gap: 10px;
     height: 40px; padding: 0 8px; border-radius: 10px; text-align: left; white-space: nowrap;
   }
   .cat-head svg.ic { width: 24px; height: 24px; flex: none; }
@@ -130,7 +130,8 @@ article.post .meta { margin-bottom: var(--line); }
 /* ---------- 清單頁 ---------- */
 .cat-section { margin-bottom: calc(var(--line) * 2); }
 .cat-label { font-weight: 400; font-size: 22px; margin: 0 0 var(--line); }
-.item.active { background: rgba(0,0,0,.08); }
+.cat-head.active { background: rgba(0,0,0,.08); }
+.nav-sep { height: 1px; background: var(--rule); margin: 8px 8px 12px; }
 
 /* ---------- 工具小卡 ---------- */
 .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--line) 20px; }
