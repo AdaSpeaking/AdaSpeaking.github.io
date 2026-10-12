@@ -8,7 +8,6 @@
 
   <nav class="cats">
     {% for cat in site.data.nav.categories %}
-    {% assign items = site.data.nav.links | where: "category", cat.key %}
     <div class="cat{% if cat.open %} expanded{% endif %}" data-cat="{{ cat.key }}">
       <button class="cat-head" aria-expanded="{% if cat.open %}true{% else %}false{% endif %}" title="{{ cat.name }}">
         {% include icon.html name=cat.icon %}
@@ -16,11 +15,8 @@
         <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
       </button>
       <div class="cat-items">
-        {% for link in items %}
-        <a class="item" href="{{ link.url }}"{% if link.url contains "://" %} target="_blank" rel="noopener"{% endif %}>{{ link.title }}</a>
-        {% else %}
-        <div class="empty">還沒有東西</div>
-        {% endfor %}
+        <a class="item" href="/articles/?c={{ cat.key }}" data-nav="articles-{{ cat.key }}">文章清單</a>
+        <a class="item" href="/tools/?c={{ cat.key }}" data-nav="tools-{{ cat.key }}">工具清單</a>
       </div>
     </div>
     {% endfor %}

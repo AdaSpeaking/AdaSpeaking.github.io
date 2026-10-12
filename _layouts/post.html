@@ -1,11 +1,15 @@
 ---
 layout: default
 ---
+{% assign cat = site.data.nav.categories | where: "key", page.cat | first %}
 <article class="post">
   <h1>{{ page.title }}</h1>
-  <p class="meta">{{ page.date | date: "%Y.%m.%d" }}</p>
+  <p class="meta">{{ page.date | date: "%Y.%m.%d" }}{% if cat %} · <a href="/articles/?c={{ cat.key }}">{{ cat.name }}</a>{% endif %}</p>
+  {% if page.tool_url and page.tool_url != "" %}
+  <p><a class="tool-btn" href="{{ page.tool_url }}"{% if page.tool_url contains "://" %} target="_blank" rel="noopener"{% endif %}>前往工具 →</a></p>
+  {% endif %}
   <div class="post-body">
     {{ content }}
   </div>
-  <a class="back" href="/">← 回首頁</a>
+  <a class="back" href="{% if cat %}/articles/?c={{ cat.key }}{% else %}/{% endif %}">← 回{% if cat %}{{ cat.name }}文章清單{% else %}首頁{% endif %}</a>
 </article>

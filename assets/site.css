@@ -126,3 +126,27 @@ article.post .meta { margin-bottom: var(--line); }
 .post-body blockquote { border-left: 2px solid var(--ink); padding-left: 16px; color: var(--ink-soft); }
 .post-body pre { overflow-x: auto; font-size: 14px; background: rgba(255,255,255,.7); padding: 0 12px; }
 .back { display: inline-block; margin-top: var(--line); font-size: 15px; }
+
+/* ---------- 清單頁 ---------- */
+.cat-section { margin-bottom: calc(var(--line) * 2); }
+.cat-label { font-weight: 400; font-size: 22px; margin: 0 0 var(--line); }
+.item.active { background: rgba(0,0,0,.08); }
+
+/* ---------- 工具小卡 ---------- */
+.tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--line) 20px; }
+.tool-card {
+  background: #fff; border: 1.5px solid var(--ink); border-radius: 12px;
+  padding: 16px 18px 12px; min-height: calc(var(--line) * 4);
+  display: flex; flex-direction: column; justify-content: space-between;
+  box-shadow: 3px 3px 0 var(--ink); transition: transform .12s, box-shadow .12s;
+}
+.tool-card:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--ink); }
+.tool-name { font-size: 18px; line-height: 1.5; }
+.tool-links { display: flex; justify-content: space-between; font-size: 13px; line-height: 1.5; margin-top: 16px; }
+.tool-links a { color: var(--ink-soft); }
+.tool-links a:hover { color: var(--ink); }
+.tool-btn {
+  display: inline-block; border: 1.5px solid var(--ink); border-radius: 999px;
+  padding: 0 16px; line-height: 30px; text-decoration: none; background: #fff; font-size: 15px;
+}
+.tool-btn:hover { background: var(--ink); color: var(--paper); }

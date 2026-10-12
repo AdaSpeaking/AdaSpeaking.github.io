@@ -11,7 +11,7 @@ content:
     filename: "{year}-{month}-{day}-{hour}{minute}{second}.md"
     view:
       primary: title
-      fields: [title, date]
+      fields: [title, cat, date]
       sort: date
       order: desc
     fields:
@@ -22,12 +22,29 @@ content:
       - name: date
         label: 日期
         type: date
+      - name: cat
+        label: 分類
+        type: select
+        required: true
+        options:
+          values:
+            - { name: marketing, label: 行銷工具 }
+            - { name: automation, label: 自動化工具 }
+            - { name: analytics, label: 數據分析工具 }
+            - { name: toys, label: 自製小玩具 }
+            - { name: 360d, label: 才庫相關 }
+      - name: tool_url
+        label: 工具網址（有填才會出現在工具清單；自己的頁面寫 /repo名稱/）
+        type: string
+      - name: tool_name
+        label: 工具小卡名稱（空白就用文章標題）
+        type: string
       - name: body
         label: 內文
         type: rich-text
 
   - name: nav
-    label: 左側選單
+    label: 左側選單分類
     type: file
     path: _data/nav.yml
     format: yaml
@@ -38,7 +55,7 @@ content:
         list: true
         fields:
           - name: key
-            label: 代號（勿改，頁面靠它歸類）
+            label: 代號（勿改，文章靠它歸類）
             type: string
             required: true
           - name: name
@@ -61,27 +78,3 @@ content:
           - name: open
             label: 預設展開
             type: boolean
-      - name: links
-        label: 頁面（順序＝分類內順序）
-        type: object
-        list: true
-        fields:
-          - name: title
-            label: 名稱
-            type: string
-            required: true
-          - name: url
-            label: 網址（自己的頁面寫 /repo名稱/，外部網站寫完整網址）
-            type: string
-            required: true
-          - name: category
-            label: 放在哪個分類
-            type: select
-            required: true
-            options:
-              values:
-                - { name: marketing, label: 行銷工具 }
-                - { name: automation, label: 自動化工具 }
-                - { name: analytics, label: 數據分析工具 }
-                - { name: toys, label: 自製小玩具 }
-                - { name: 360d, label: 才庫相關 }

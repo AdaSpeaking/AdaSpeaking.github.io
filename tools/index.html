@@ -1,0 +1,33 @@
+---
+layout: default
+title: 工具清單
+list_type: tools
+---
+<header class="mast">
+  <h1 class="list-title" data-all="所有工具">所有工具</h1>
+  <hr class="dots">
+</header>
+
+{% for cat in site.data.nav.categories %}
+{% assign posts = site.posts | where: "cat", cat.key %}
+{% assign tools = "" | split: "" %}
+{% for post in posts %}{% if post.tool_url and post.tool_url != "" %}{% assign tools = tools | push: post %}{% endif %}{% endfor %}
+<section class="cat-section" data-cat="{{ cat.key }}" data-name="{{ cat.name }}">
+  <h2 class="cat-label">{{ cat.name }}</h2>
+  {% if tools.size > 0 %}
+  <div class="tool-grid">
+    {% for post in tools %}
+    <div class="tool-card">
+      <div class="tool-name">{% if post.tool_name and post.tool_name != "" %}{{ post.tool_name }}{% else %}{{ post.title }}{% endif %}</div>
+      <div class="tool-links">
+        <a href="{{ post.url }}">閱讀說明</a>
+        <a href="{{ post.tool_url }}"{% if post.tool_url contains "://" %} target="_blank" rel="noopener"{% endif %}>前往工具 →</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="note-empty">這個分類還沒有工具。</p>
+  {% endif %}
+</section>
+{% endfor %}

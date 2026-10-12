@@ -14,7 +14,8 @@ layout: default
     {% for post in site.posts %}
     <li>
       <a class="title" href="{{ post.url }}">{{ post.title }}</a>
-      <p class="meta">↳ {{ post.date | date: "%Y.%m.%d" }}</p>
+      {% assign pc = site.data.nav.categories | where: "key", post.cat | first %}
+      <p class="meta">↳ {{ post.date | date: "%Y.%m.%d" }}{% if pc %} · {{ pc.name }}{% endif %}</p>
       <p class="excerpt">{{ post.excerpt | strip_html | truncate: 90 }}</p>
     </li>
     {% endfor %}

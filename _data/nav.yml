@@ -19,14 +19,3 @@ categories:
     name: 才庫相關
     icon: building
     open: true
-
-links:
-  - title: MCES 進階報表分析
-    url: /MCES_IR/
-    category: 360d
-  - title: AI 轉型核心問題快篩
-    url: /ai-quick-screen/
-    category: 360d
-  - title: 官網設計稿
-    url: /360d-site/
-    category: 360d
