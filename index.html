@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Ada's Workbench</title>
+<style>
+  :root { --bg:#f6f5f2; --card:#fff; --ink:#1d1d1f; --mute:#6b6b70; --line:#e4e2dc; --accent:#2f6f5e; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#151517; --card:#1f1f22; --ink:#ececee; --mute:#9a9aa0; --line:#2e2e33; --accent:#6cc3a8; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif; line-height:1.6; }
+  main { max-width:720px; margin:0 auto; padding:56px 16px 48px; }
+  h1 { font-size:28px; margin:0 0 4px; letter-spacing:.5px; }
+  .sub { color:var(--mute); margin:0 0 36px; font-size:15px; }
+  a.card { display:block; text-decoration:none; color:inherit; background:var(--card);
+    border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin-bottom:14px;
+    transition:border-color .15s, transform .15s; }
+  a.card:hover { border-color:var(--accent); transform:translateY(-2px); }
+  .name { font-weight:600; font-size:17px; }
+  .desc { color:var(--mute); font-size:14px; margin-top:4px; }
+  .path { color:var(--accent); font-size:13px; margin-top:8px; font-family:ui-monospace,Menlo,monospace; }
+  footer { color:var(--mute); font-size:12px; margin-top:40px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Ada's Workbench</h1>
+  <p class="sub">工具與頁面入口</p>
+
+  <a class="card" href="/MCES_IR/">
+    <div class="name">MCES 進階報表分析</div>
+    <div class="desc">上傳分數與人員資料，自動產出可下載圖表</div>
+    <div class="path">/MCES_IR/</div>
+  </a>
+
+  <a class="card" href="/ai-quick-screen/">
+    <div class="name">企業 AI 轉型核心問題快篩</div>
+    <div class="desc">AI 轉型快篩問卷</div>
+    <div class="path">/ai-quick-screen/</div>
+  </a>
+
+  <a class="card" href="/360d-site/">
+    <div class="name">360d才庫事業群 官網設計稿</div>
+    <div class="desc">官網改版設計稿</div>
+    <div class="path">/360d-site/</div>
+  </a>
+
+  <footer>adaspeaking.cloud</footer>
+</main>
+</body>
+</html>
