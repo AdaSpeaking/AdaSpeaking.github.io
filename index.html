@@ -1,254 +1,27 @@
-<!doctype html>
-<html lang="zh-Hant">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex, nofollow">
-<title>Ada's Workbench</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap" rel="stylesheet">
-<style>
-  @font-face {
-    font-family: "Playwrite US";
-    src: url("assets/fonts/playwrite-us-400-normal.ttf") format("truetype");
-    font-weight: 400; font-style: normal; font-display: swap;
-  }
-  :root {
-    --paper: #f7f7f7;
-    --ink: #1a1a1a;
-    --ink-soft: #5c5c5c;
-    --rule: #c9d6ee;          /* 橫線 */
-    --margin: #ef7a8a;        /* 紅色邊線 */
-    --line: 33px;             /* 行高 = 橫線間距 */
-    --rail: 56px;
-    --panel: 268px;
-    --hand: "Playwrite US", "LXGW WenKai TC", "Kaiti TC", "DFKai-SB", cursive;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; }
-  body {
-    min-height: 100vh;
-    background-color: var(--paper);
-    background-image: linear-gradient(to bottom, transparent calc(var(--line) - 1px), var(--rule) calc(var(--line) - 1px));
-    background-size: 100% var(--line);
-    color: var(--ink);
-    font-family: var(--hand);
-    font-size: 18px;
-    line-height: var(--line);
-    -webkit-font-smoothing: antialiased;
-    text-rendering: geometricPrecision;
-  }
-  a { color: var(--ink); text-decoration-thickness: 1px; text-underline-offset: .15em; }
-  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
-  svg { display: block; }
+---
+layout: default
+---
+<header class="mast">
+  <h1>Ada's Workbench</h1>
+  <p class="tagline">工具、筆記，還有一些順手寫下的東西。</p>
+  <hr class="dots">
+</header>
 
-  /* ---------- 側欄 ---------- */
-  .side {
-    position: fixed; inset: 0 auto 0 0; z-index: 20;
-    width: var(--rail);
-    background: var(--paper);
-    border-right: 1.5px solid var(--margin);
-    display: flex; flex-direction: column;
-    transition: width .22s ease;
-    overflow: hidden;
-  }
-  body.open .side { width: var(--panel); }
-  .side-top { display: flex; align-items: center; gap: 10px; height: var(--line); margin: var(--line) 0 var(--line); padding: 0 8px; }
-  .icon-btn {
-    width: 40px; height: 40px; flex: none; border-radius: 10px;
-    display: grid; place-items: center;
-  }
-  .icon-btn:hover, .cat-head:hover, .item:hover { background: rgba(0,0,0,.06); }
-  .brand { white-space: nowrap; font-size: 16px; opacity: 0; transition: opacity .15s; }
-  body.open .brand { opacity: 1; }
+<section class="notes" id="notes">
+  <h2>筆記</h2>
+  {% if site.posts.size > 0 %}
+  <ul class="post-list">
+    {% for post in site.posts %}
+    <li>
+      <a class="title" href="{{ post.url }}">{{ post.title }}</a>
+      <p class="meta">↳ {{ post.date | date: "%Y.%m.%d" }}</p>
+      <p class="excerpt">{{ post.excerpt | strip_html | truncate: 90 }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="note-empty">這頁還空著，之後寫點東西放這裡。</p>
+  {% endif %}
+</section>
 
-  nav.cats { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0 8px; }
-  .cat { margin-bottom: 4px; }
-  .cat-head {
-    width: 100%; display: flex; align-items: center; gap: 10px;
-    height: 40px; padding: 0 8px; border-radius: 10px; text-align: left; white-space: nowrap;
-  }
-  .cat-head svg.ic { width: 24px; height: 24px; flex: none; }
-  .cat-name { flex: 1; font-size: 15px; opacity: 0; transition: opacity .15s; }
-  .chev { width: 16px; height: 16px; flex: none; opacity: 0; transition: transform .2s, opacity .15s; }
-  body.open .cat-name, body.open .chev { opacity: 1; }
-  .cat.expanded .chev { transform: rotate(90deg); }
-  .cat-items { display: none; padding: 2px 0 6px 42px; }
-  body.open .cat.expanded .cat-items { display: block; }
-  .item {
-    display: block; padding: 4px 10px; border-radius: 8px; font-size: 14px; line-height: 1.5;
-    text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .empty { padding: 4px 10px; font-size: 13px; line-height: 1.5; color: var(--ink-soft); }
-  .side-foot { padding: 12px 16px; font-size: 12px; line-height: 1.5; color: var(--ink-soft); white-space: nowrap; opacity: 0; transition: opacity .15s; }
-  body.open .side-foot { opacity: 1; }
-
-  .scrim { display: none; }
-
-  /* ---------- 主內容 ---------- */
-  main {
-    margin-left: var(--rail);
-    padding: var(--line) 48px calc(var(--line) * 3);
-    transition: margin-left .22s ease;
-  }
-  body.open main { margin-left: var(--panel); }
-  .page { max-width: 720px; margin: 0 auto; }
-  header.mast { margin: 0 0 calc(var(--line) * 2); }
-  h1 {
-    font-weight: 400; font-size: 44px; line-height: calc(var(--line) * 2);
-    margin: 0;
-  }
-  .tagline { margin: 0; color: var(--ink-soft); }
-  .dots { border: 0; border-top: 2px dotted var(--ink); width: 240px; margin: calc(var(--line) - 1px) 0 0; }
-
-  section.notes h2 { font-weight: 400; font-size: 22px; margin: 0 0 var(--line); }
-  .note-empty { margin: 0; color: var(--ink-soft); }
-  .doodle { display: block; width: 120px; margin: calc(var(--line) * 2) 0 0 auto; opacity: .9; }
-
-  /* ---------- 手機 ---------- */
-  .mobile-bar { display: none; }
-  @media (max-width: 760px) {
-    .side { width: var(--panel); transform: translateX(-100%); transition: transform .22s ease; }
-    body.open .side { transform: none; }
-    body.open .scrim { display: block; position: fixed; inset: 0; z-index: 15; background: rgba(0,0,0,.25); }
-    .brand, .cat-name, .chev, .side-foot { opacity: 1; }
-    main, body.open main { margin-left: 0; padding: 0 16px calc(var(--line) * 3); }
-    .mobile-bar { display: flex; align-items: center; height: calc(var(--line) * 2); }
-    h1 { font-size: 34px; }
-  }
-</style>
-</head>
-<body>
-
-<aside class="side" id="side" aria-label="選單">
-  <div class="side-top">
-    <button class="icon-btn" id="toggle" aria-label="展開或收合選單" aria-expanded="false">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg>
-    </button>
-    <span class="brand">Ada's Workbench</span>
-  </div>
-
-  <nav class="cats">
-    <div class="cat" data-cat="marketing">
-      <button class="cat-head" aria-expanded="false" title="行銷工具">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 6a8.5 8.5 0 0 1 0 12"/></svg>
-        <span class="cat-name">行銷工具</span>
-        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
-      </button>
-      <div class="cat-items"><div class="empty">還沒有東西</div></div>
-    </div>
-
-    <div class="cat" data-cat="automation">
-      <button class="cat-head" aria-expanded="false" title="自動化工具">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>
-        <span class="cat-name">自動化工具</span>
-        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
-      </button>
-      <div class="cat-items"><div class="empty">還沒有東西</div></div>
-    </div>
-
-    <div class="cat" data-cat="analytics">
-      <button class="cat-head" aria-expanded="false" title="數據分析工具">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M7 16v-5M12 16V6M17 16v-8"/></svg>
-        <span class="cat-name">數據分析工具</span>
-        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
-      </button>
-      <div class="cat-items"><div class="empty">還沒有東西</div></div>
-    </div>
-
-    <div class="cat" data-cat="toys">
-      <button class="cat-head" aria-expanded="false" title="自製小玩具">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="M8.5 8.5h.01M15.5 8.5h.01M12 12h.01M8.5 15.5h.01M15.5 15.5h.01"/></svg>
-        <span class="cat-name">自製小玩具</span>
-        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
-      </button>
-      <div class="cat-items"><div class="empty">還沒有東西</div></div>
-    </div>
-
-    <div class="cat" data-cat="360d">
-      <button class="cat-head" aria-expanded="false" title="才庫相關">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V6l8-3 8 3v15"/><path d="M9 21v-5h6v5"/><path d="M9 9h.01M15 9h.01M9 12.5h.01M15 12.5h.01"/></svg>
-        <span class="cat-name">才庫相關</span>
-        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
-      </button>
-      <div class="cat-items">
-        <a class="item" href="/MCES_IR/">MCES 進階報表分析</a>
-        <a class="item" href="/ai-quick-screen/">AI 轉型核心問題快篩</a>
-        <a class="item" href="/360d-site/">官網設計稿</a>
-      </div>
-    </div>
-  </nav>
-
-  <div class="side-foot">adaspeaking.cloud</div>
-</aside>
-<div class="scrim" id="scrim"></div>
-
-<main>
-  <div class="mobile-bar">
-    <button class="icon-btn" id="toggleMobile" aria-label="開啟選單">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-    </button>
-  </div>
-
-  <div class="page">
-    <header class="mast">
-      <h1>Ada's Workbench</h1>
-      <p class="tagline">工具、筆記，還有一些順手寫下的東西。</p>
-      <hr class="dots">
-    </header>
-
-    <section class="notes" id="notes">
-      <h2>筆記</h2>
-      <p class="note-empty">這頁還空著，之後寫點東西放這裡。</p>
-    </section>
-
-    <img class="doodle" src="assets/heart.png" alt="" aria-hidden="true">
-  </div>
-</main>
-
-<script>
-(function () {
-  var body = document.body;
-  var KEY = 'workbench-sidebar-open';
-  var isMobile = function () { return window.matchMedia('(max-width: 760px)').matches; };
-
-  function setOpen(open) {
-    body.classList.toggle('open', open);
-    document.getElementById('toggle').setAttribute('aria-expanded', open);
-    if (!isMobile()) { try { localStorage.setItem(KEY, open ? '1' : '0'); } catch (e) {} }
-  }
-
-  // 桌機記住上次的開合狀態；預設收合
-  if (!isMobile()) {
-    var saved = null;
-    try { saved = localStorage.getItem(KEY); } catch (e) {}
-    if (saved === '1') body.classList.add('open');
-  }
-
-  document.getElementById('toggle').addEventListener('click', function () { setOpen(!body.classList.contains('open')); });
-  document.getElementById('toggleMobile').addEventListener('click', function () { setOpen(true); });
-  document.getElementById('scrim').addEventListener('click', function () { setOpen(false); });
-
-  // 分類：收合狀態下點圖示 → 展開側欄並打開該分類
-  document.querySelectorAll('.cat-head').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var cat = btn.parentElement;
-      if (!body.classList.contains('open')) {
-        setOpen(true);
-        cat.classList.add('expanded');
-      } else {
-        cat.classList.toggle('expanded');
-      }
-      btn.setAttribute('aria-expanded', cat.classList.contains('expanded'));
-    });
-  });
-
-  // 預設展開「才庫相關」
-  var d = document.querySelector('[data-cat="360d"]');
-  d.classList.add('expanded');
-  d.querySelector('.cat-head').setAttribute('aria-expanded', 'true');
-})();
-</script>
-</body>
-</html>
+<img class="doodle" src="/assets/heart.png" alt="" aria-hidden="true">

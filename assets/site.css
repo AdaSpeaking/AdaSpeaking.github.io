@@ -1,0 +1,128 @@
+  @font-face {
+    font-family: "Playwrite US";
+    src: url("fonts/playwrite-us-400-normal.ttf") format("truetype");
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  :root {
+    --paper: #f7f7f7;
+    --ink: #1a1a1a;
+    --ink-soft: #5c5c5c;
+    --rule: #c9d6ee;          /* 橫線 */
+    --margin: #ef7a8a;        /* 紅色邊線 */
+    --line: 33px;             /* 行高 = 橫線間距 */
+    --rail: 56px;
+    --panel: 268px;
+    --hand: "Playwrite US", "LXGW WenKai TC", "Kaiti TC", "DFKai-SB", cursive;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    background-color: var(--paper);
+    background-image: linear-gradient(to bottom, transparent calc(var(--line) - 1px), var(--rule) calc(var(--line) - 1px));
+    background-size: 100% var(--line);
+    color: var(--ink);
+    font-family: var(--hand);
+    font-size: 18px;
+    line-height: var(--line);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+  }
+  a { color: var(--ink); text-decoration-thickness: 1px; text-underline-offset: .15em; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  svg { display: block; }
+
+  /* ---------- 側欄 ---------- */
+  .side {
+    position: fixed; inset: 0 auto 0 0; z-index: 20;
+    width: var(--rail);
+    background: var(--paper);
+    border-right: 1.5px solid var(--margin);
+    display: flex; flex-direction: column;
+    transition: width .22s ease;
+    overflow: hidden;
+  }
+  body.open .side { width: var(--panel); }
+  .side-top { display: flex; align-items: center; gap: 10px; height: var(--line); margin: var(--line) 0 var(--line); padding: 0 8px; }
+  .icon-btn {
+    width: 40px; height: 40px; flex: none; border-radius: 10px;
+    display: grid; place-items: center;
+  }
+  .icon-btn:hover, .cat-head:hover, .item:hover { background: rgba(0,0,0,.06); }
+  .brand { white-space: nowrap; font-size: 16px; opacity: 0; transition: opacity .15s; }
+  body.open .brand { opacity: 1; }
+
+  nav.cats { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0 8px; }
+  .cat { margin-bottom: 4px; }
+  .cat-head {
+    width: 100%; display: flex; align-items: center; gap: 10px;
+    height: 40px; padding: 0 8px; border-radius: 10px; text-align: left; white-space: nowrap;
+  }
+  .cat-head svg.ic { width: 24px; height: 24px; flex: none; }
+  .cat-name { flex: 1; font-size: 15px; opacity: 0; transition: opacity .15s; }
+  .chev { width: 16px; height: 16px; flex: none; opacity: 0; transition: transform .2s, opacity .15s; }
+  body.open .cat-name, body.open .chev { opacity: 1; }
+  .cat.expanded .chev { transform: rotate(90deg); }
+  .cat-items { display: none; padding: 2px 0 6px 42px; }
+  body.open .cat.expanded .cat-items { display: block; }
+  .item {
+    display: block; padding: 4px 10px; border-radius: 8px; font-size: 14px; line-height: 1.5;
+    text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .empty { padding: 4px 10px; font-size: 13px; line-height: 1.5; color: var(--ink-soft); }
+  .side-foot { padding: 12px 16px; font-size: 12px; line-height: 1.5; color: var(--ink-soft); white-space: nowrap; opacity: 0; transition: opacity .15s; }
+  body.open .side-foot { opacity: 1; }
+
+  .scrim { display: none; }
+
+  /* ---------- 主內容 ---------- */
+  main {
+    margin-left: var(--rail);
+    padding: var(--line) 48px calc(var(--line) * 3);
+    transition: margin-left .22s ease;
+  }
+  body.open main { margin-left: var(--panel); }
+  .page { max-width: 720px; margin: 0 auto; }
+  header.mast { margin: 0 0 calc(var(--line) * 2); }
+  h1 {
+    font-weight: 400; font-size: 44px; line-height: calc(var(--line) * 2);
+    margin: 0;
+  }
+  .tagline { margin: 0; color: var(--ink-soft); }
+  .dots { border: 0; border-top: 2px dotted var(--ink); width: 240px; margin: calc(var(--line) - 1px) 0 0; }
+
+  section.notes h2 { font-weight: 400; font-size: 22px; margin: 0 0 var(--line); }
+  .note-empty { margin: 0; color: var(--ink-soft); }
+  .doodle { display: block; width: 120px; margin: calc(var(--line) * 2) 0 0 auto; opacity: .9; }
+
+  /* ---------- 手機 ---------- */
+  .mobile-bar { display: none; }
+  @media (max-width: 760px) {
+    .side { width: var(--panel); transform: translateX(-100%); transition: transform .22s ease; }
+    body.open .side { transform: none; }
+    body.open .scrim { display: block; position: fixed; inset: 0; z-index: 15; background: rgba(0,0,0,.25); }
+    .brand, .cat-name, .chev, .side-foot { opacity: 1; }
+    main, body.open main { margin-left: 0; padding: 0 16px calc(var(--line) * 3); }
+    .mobile-bar { display: flex; align-items: center; height: calc(var(--line) * 2); }
+    h1 { font-size: 34px; }
+  }
+
+/* ---------- 文章列表 ---------- */
+.post-list { list-style: none; margin: 0; padding: 0; }
+.post-list li { margin: 0 0 var(--line); }
+.post-list a.title { font-size: 22px; text-decoration: none; }
+.post-list a.title:hover { text-decoration: underline; }
+.meta { color: var(--ink-soft); font-size: 14px; margin: 0; }
+.excerpt { margin: 0; }
+
+/* ---------- 單篇文章 ---------- */
+article.post h1 { font-size: 36px; line-height: calc(var(--line) * 2); }
+article.post .meta { margin-bottom: var(--line); }
+.post-body p, .post-body ul, .post-body ol, .post-body blockquote { margin: 0 0 var(--line); }
+.post-body h2, .post-body h3 { font-weight: 400; margin: var(--line) 0; line-height: var(--line); }
+.post-body h2 { font-size: 24px; }
+.post-body h3 { font-size: 20px; }
+.post-body img { max-width: 100%; height: auto; display: block; margin: 0 0 var(--line); }
+.post-body blockquote { border-left: 2px solid var(--ink); padding-left: 16px; color: var(--ink-soft); }
+.post-body pre { overflow-x: auto; font-size: 14px; background: rgba(255,255,255,.7); padding: 0 12px; }
+.back { display: inline-block; margin-top: var(--line); font-size: 15px; }

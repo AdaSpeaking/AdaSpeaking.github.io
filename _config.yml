@@ -1,0 +1,18 @@
+title: Ada's Workbench
+url: https://adaspeaking.cloud
+timezone: Asia/Taipei
+lang: zh-Hant
+markdown: kramdown
+permalink: /notes/:year/:month/:day/:title/
+excerpt_separator: "\n\n"
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+
+exclude:
+  - .pages.yml
+  - README.md

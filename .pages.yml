@@ -1,0 +1,27 @@
+media:
+  input: assets/uploads
+  output: /assets/uploads
+  categories: [image]
+
+content:
+  - name: posts
+    label: 文章
+    type: collection
+    path: _posts
+    filename: "{year}-{month}-{day}-{hour}{minute}{second}.md"
+    view:
+      primary: title
+      fields: [title, date]
+      sort: date
+      order: desc
+    fields:
+      - name: title
+        label: 標題
+        type: string
+        required: true
+      - name: date
+        label: 日期
+        type: date
+      - name: body
+        label: 內文
+        type: rich-text
