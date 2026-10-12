@@ -20,6 +20,17 @@
   document.getElementById('toggleMobile').addEventListener('click', function () { setOpen(true); });
   document.getElementById('scrim').addEventListener('click', function () { setOpen(false); });
 
+  // 編輯按鈕：只在開過 ?edit=on 的瀏覽器顯示（?edit=off 關掉）
+  var EK = 'workbench-editor';
+  var ep = new URLSearchParams(location.search).get('edit');
+  try {
+    if (ep === 'on') localStorage.setItem(EK, '1');
+    if (ep === 'off') localStorage.removeItem(EK);
+    if (localStorage.getItem(EK) === '1') {
+      document.querySelectorAll('.edit-link').forEach(function (a) { a.hidden = false; });
+    }
+  } catch (e) {}
+
   // 文章清單／工具清單：依 ?c= 只顯示該分類
   var c = new URLSearchParams(location.search).get('c');
   var sections = document.querySelectorAll('.cat-section');

@@ -11,5 +11,8 @@ layout: default
   <div class="post-body">
     {{ content }}
   </div>
-  <a class="back" href="{% if cat %}/articles/?c={{ cat.key }}{% else %}/{% endif %}">← 回{% if cat %}{{ cat.name }}文章清單{% else %}首頁{% endif %}</a>
+  <div class="post-foot">
+    <a class="back" href="{% if cat %}/articles/?c={{ cat.key }}{% else %}/{% endif %}">← 回{% if cat %}{{ cat.name }}文章清單{% else %}首頁{% endif %}</a>
+    <a class="edit-link" hidden href="https://app.pagescms.org/AdaSpeaking/AdaSpeaking.github.io/main/collection/posts/edit/{{ page.path | url_encode }}" target="_blank" rel="noopener">✎ 編輯這篇</a>
+  </div>
 </article>

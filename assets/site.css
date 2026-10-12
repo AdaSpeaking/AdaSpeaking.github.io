@@ -125,7 +125,8 @@ article.post .meta { margin-bottom: var(--line); }
 .post-body img { max-width: 100%; height: auto; display: block; margin: 0 0 var(--line); }
 .post-body blockquote { border-left: 2px solid var(--ink); padding-left: 16px; color: var(--ink-soft); }
 .post-body pre { overflow-x: auto; font-size: 14px; background: rgba(255,255,255,.7); padding: 0 12px; }
-.back { display: inline-block; margin-top: var(--line); font-size: 15px; }
+.post-foot { display: flex; justify-content: space-between; align-items: center; margin-top: var(--line); font-size: 15px; }
+.edit-link { color: var(--ink-soft); }
 
 /* ---------- 清單頁 ---------- */
 .cat-section { margin-bottom: calc(var(--line) * 2); }
