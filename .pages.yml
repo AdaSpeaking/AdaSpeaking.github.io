@@ -25,3 +25,63 @@ content:
       - name: body
         label: 內文
         type: rich-text
+
+  - name: nav
+    label: 左側選單
+    type: file
+    path: _data/nav.yml
+    format: yaml
+    fields:
+      - name: categories
+        label: 分類（順序＝選單順序）
+        type: object
+        list: true
+        fields:
+          - name: key
+            label: 代號（勿改，頁面靠它歸類）
+            type: string
+            required: true
+          - name: name
+            label: 顯示名稱
+            type: string
+            required: true
+          - name: icon
+            label: 圖示
+            type: select
+            options:
+              values:
+                - { name: megaphone, label: 大聲公 }
+                - { name: gear, label: 齒輪 }
+                - { name: chart, label: 長條圖 }
+                - { name: dice, label: 骰子 }
+                - { name: building, label: 大樓 }
+                - { name: pen, label: 筆 }
+                - { name: star, label: 星星 }
+                - { name: folder, label: 資料夾 }
+          - name: open
+            label: 預設展開
+            type: boolean
+      - name: links
+        label: 頁面（順序＝分類內順序）
+        type: object
+        list: true
+        fields:
+          - name: title
+            label: 名稱
+            type: string
+            required: true
+          - name: url
+            label: 網址（自己的頁面寫 /repo名稱/，外部網站寫完整網址）
+            type: string
+            required: true
+          - name: category
+            label: 放在哪個分類
+            type: select
+            required: true
+            options:
+              values:
+                - { name: marketing, label: 行銷工具 }
+                - { name: automation, label: 自動化工具 }
+                - { name: analytics, label: 數據分析工具 }
+                - { name: toys, label: 自製小玩具 }
+                - { name: 360d, label: 才庫相關 }

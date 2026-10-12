@@ -34,8 +34,4 @@
     });
   });
 
-  // 預設展開「才庫相關」
-  var d = document.querySelector('[data-cat="360d"]');
-  d.classList.add('expanded');
-  d.querySelector('.cat-head').setAttribute('aria-expanded', 'true');
 })();

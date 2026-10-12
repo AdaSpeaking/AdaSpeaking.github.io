@@ -1,0 +1,32 @@
+categories:
+  - key: marketing
+    name: 行銷工具
+    icon: megaphone
+    open: false
+  - key: automation
+    name: 自動化工具
+    icon: gear
+    open: false
+  - key: analytics
+    name: 數據分析工具
+    icon: chart
+    open: false
+  - key: toys
+    name: 自製小玩具
+    icon: dice
+    open: false
+  - key: 360d
+    name: 才庫相關
+    icon: building
+    open: true
+
+links:
+  - title: MCES 進階報表分析
+    url: /MCES_IR/
+    category: 360d
+  - title: AI 轉型核心問題快篩
+    url: /ai-quick-screen/
+    category: 360d
+  - title: 官網設計稿
+    url: /360d-site/
+    category: 360d

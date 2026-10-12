@@ -3,58 +3,27 @@
     <button class="icon-btn" id="toggle" aria-label="展開或收合選單" aria-expanded="false">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg>
     </button>
-    <span class="brand">Ada's Workbench</span>
+    <a class="brand" href="/" style="text-decoration:none">Ada's Workbench</a>
   </div>
 
   <nav class="cats">
-    <div class="cat" data-cat="marketing">
-      <button class="cat-head" aria-expanded="false" title="行銷工具">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 6a8.5 8.5 0 0 1 0 12"/></svg>
-        <span class="cat-name">行銷工具</span>
-        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
-      </button>
-      <div class="cat-items"><div class="empty">還沒有東西</div></div>
-    </div>
-
-    <div class="cat" data-cat="automation">
-      <button class="cat-head" aria-expanded="false" title="自動化工具">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>
-        <span class="cat-name">自動化工具</span>
-        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
-      </button>
-      <div class="cat-items"><div class="empty">還沒有東西</div></div>
-    </div>
-
-    <div class="cat" data-cat="analytics">
-      <button class="cat-head" aria-expanded="false" title="數據分析工具">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M7 16v-5M12 16V6M17 16v-8"/></svg>
-        <span class="cat-name">數據分析工具</span>
-        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
-      </button>
-      <div class="cat-items"><div class="empty">還沒有東西</div></div>
-    </div>
-
-    <div class="cat" data-cat="toys">
-      <button class="cat-head" aria-expanded="false" title="自製小玩具">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="M8.5 8.5h.01M15.5 8.5h.01M12 12h.01M8.5 15.5h.01M15.5 15.5h.01"/></svg>
-        <span class="cat-name">自製小玩具</span>
-        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
-      </button>
-      <div class="cat-items"><div class="empty">還沒有東西</div></div>
-    </div>
-
-    <div class="cat" data-cat="360d">
-      <button class="cat-head" aria-expanded="false" title="才庫相關">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V6l8-3 8 3v15"/><path d="M9 21v-5h6v5"/><path d="M9 9h.01M15 9h.01M9 12.5h.01M15 12.5h.01"/></svg>
-        <span class="cat-name">才庫相關</span>
+    {% for cat in site.data.nav.categories %}
+    {% assign items = site.data.nav.links | where: "category", cat.key %}
+    <div class="cat{% if cat.open %} expanded{% endif %}" data-cat="{{ cat.key }}">
+      <button class="cat-head" aria-expanded="{% if cat.open %}true{% else %}false{% endif %}" title="{{ cat.name }}">
+        {% include icon.html name=cat.icon %}
+        <span class="cat-name">{{ cat.name }}</span>
         <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
       </button>
       <div class="cat-items">
-        <a class="item" href="/MCES_IR/">MCES 進階報表分析</a>
-        <a class="item" href="/ai-quick-screen/">AI 轉型核心問題快篩</a>
-        <a class="item" href="/360d-site/">官網設計稿</a>
+        {% for link in items %}
+        <a class="item" href="{{ link.url }}"{% if link.url contains "://" %} target="_blank" rel="noopener"{% endif %}>{{ link.title }}</a>
+        {% else %}
+        <div class="empty">還沒有東西</div>
+        {% endfor %}
       </div>
     </div>
+    {% endfor %}
   </nav>
 
   <div class="side-foot">adaspeaking.cloud</div>
