@@ -13,13 +13,8 @@ list_type: articles
 <section class="cat-section" data-cat="{{ cat.key }}" data-name="{{ cat.name }}">
   <h2 class="cat-label">{{ cat.name }}</h2>
   {% if posts.size > 0 %}
-  <ul class="post-list">
-    {% for post in posts %}
-    <li>
-      <a class="title" href="{{ post.url }}">{{ post.title }}</a>
-      <p class="meta">↳ {{ post.date | date: "%Y.%m.%d" }}{% if post.tool_url %} · 附工具{% endif %}</p>
-    </li>
-    {% endfor %}
+  <ul class="note-grid" data-paginate="10">
+    {% for post in posts %}{% include post-card.html post=post %}{% endfor %}
   </ul>
   {% else %}
   <p class="note-empty">這個分類還沒有文章。</p>

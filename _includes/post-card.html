@@ -1,0 +1,8 @@
+{% assign p = include.post %}{% assign pc = site.data.nav.categories | where: "key", p.cat | first %}
+<li class="note-card">
+  <a href="{{ p.url }}">
+    <span class="nc-title">{{ p.title }}</span>
+    <span class="nc-meta">{{ p.date | date: "%Y.%m.%d" }}{% if pc and include.show_cat %} · {{ pc.name }}{% endif %}{% if p.tool_url and p.tool_url != "" %} · 附工具{% endif %}</span>
+    {% assign ex = p.excerpt | strip_html | strip | truncate: 60 %}{% if ex != "" %}<span class="nc-excerpt">{{ ex }}</span>{% endif %}
+  </a>
+</li>

@@ -15,7 +15,7 @@ list_type: tools
 <section class="cat-section" data-cat="{{ cat.key }}" data-name="{{ cat.name }}">
   <h2 class="cat-label">{{ cat.name }}</h2>
   {% if tools.size > 0 %}
-  <div class="tool-grid">
+  <div class="tool-grid" data-paginate="9">
     {% for post in tools %}
     <div class="tool-card">
       <div class="tool-name">{% if post.tool_name and post.tool_name != "" %}{{ post.tool_name }}{% else %}{{ post.title }}{% endif %}</div>

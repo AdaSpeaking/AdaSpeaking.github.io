@@ -151,3 +151,46 @@ article.post .meta { margin-bottom: var(--line); }
   padding: 0 16px; line-height: 30px; text-decoration: none; background: #fff; font-size: 15px;
 }
 .tool-btn:hover { background: var(--ink); color: var(--paper); }
+
+/* ---------- 便條紙文章卡 ---------- */
+.note-grid {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;
+}
+.note-card { --fold: 26px; --bw: 3px; position: relative; }
+.note-card a {
+  position: relative; display: flex; flex-direction: column; gap: 6px;
+  min-height: 150px; height: 100%; padding: 18px 20px calc(var(--fold) + 6px);
+  background: #fff; border: var(--bw) solid var(--ink); text-decoration: none;
+  line-height: 1.55;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--fold)), calc(100% - var(--fold)) 100%, 0 100%);
+  transition: transform .12s;
+}
+/* 折角 */
+.note-card a::after {
+  content: ""; position: absolute;
+  right: calc(var(--bw) * -1); bottom: calc(var(--bw) * -1);
+  width: var(--fold); height: var(--fold);
+  border-top: var(--bw) solid var(--ink); border-left: var(--bw) solid var(--ink);
+  box-sizing: border-box; background-origin: border-box;
+  background-image: linear-gradient(to bottom right,
+    #fff calc(50% - 2.5px), var(--ink) calc(50% - 2.5px),
+    var(--ink) calc(50% + 2px), transparent calc(50% + 2px));
+}
+.note-card a:hover { transform: translateY(-2px); }
+.note-card a:hover .nc-title { text-decoration: underline; text-underline-offset: .15em; }
+.nc-title { font-size: 19px; }
+.nc-meta { font-size: 13px; color: var(--ink-soft); }
+.nc-excerpt { font-size: 14px; color: var(--ink-soft); }
+
+/* ---------- 頁碼 ---------- */
+.pager { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: var(--line) 0 0; }
+.pager button {
+  min-width: 34px; height: 34px; padding: 0 8px; border-radius: 8px;
+  font-size: 15px; line-height: 1;
+}
+.pager button:hover:not([disabled]) { background: rgba(0,0,0,.06); }
+.pager button[aria-current="page"] { border: 2px solid var(--ink); }
+.pager button[disabled] { opacity: .3; cursor: default; }
+
+[hidden] { display: none !important; }

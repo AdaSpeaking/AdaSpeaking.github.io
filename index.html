@@ -10,15 +10,8 @@ layout: default
 <section class="notes" id="notes">
   <h2>筆記</h2>
   {% if site.posts.size > 0 %}
-  <ul class="post-list">
-    {% for post in site.posts %}
-    <li>
-      <a class="title" href="{{ post.url }}">{{ post.title }}</a>
-      {% assign pc = site.data.nav.categories | where: "key", post.cat | first %}
-      <p class="meta">↳ {{ post.date | date: "%Y.%m.%d" }}{% if pc %} · {{ pc.name }}{% endif %}</p>
-      <p class="excerpt">{{ post.excerpt | strip_html | truncate: 90 }}</p>
-    </li>
-    {% endfor %}
+  <ul class="note-grid" data-paginate="10">
+    {% for post in site.posts %}{% include post-card.html post=post show_cat=true %}{% endfor %}
   </ul>
   {% else %}
   <p class="note-empty">這頁還空著，之後寫點東西放這裡。</p>

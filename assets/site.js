@@ -37,4 +37,35 @@
       if (listType === 'articles' && nav) nav.classList.add('active');
     }
   }
+
+  // 文章卡分頁：每頁 data-paginate 篇，下方顯示頁碼
+  document.querySelectorAll('[data-paginate]').forEach(function (list) {
+    var per = parseInt(list.dataset.paginate, 10) || 10;
+    var items = Array.prototype.slice.call(list.children);
+    var pages = Math.ceil(items.length / per);
+    if (pages <= 1) return;
+    var pager = document.createElement('nav');
+    pager.className = 'pager';
+    pager.setAttribute('aria-label', '分頁');
+    list.after(pager);
+
+    function show(n, scroll) {
+      items.forEach(function (li, i) { li.hidden = Math.floor(i / per) !== n - 1; });
+      pager.innerHTML = '';
+      function btn(label, target, opts) {
+        var b = document.createElement('button');
+        b.textContent = label;
+        if (opts && opts.current) b.setAttribute('aria-current', 'page');
+        if (opts && opts.disabled) b.disabled = true;
+        if (opts && opts.aria) b.setAttribute('aria-label', opts.aria);
+        b.addEventListener('click', function () { show(target, true); });
+        pager.appendChild(b);
+      }
+      btn('‹', n - 1, { disabled: n === 1, aria: '上一頁' });
+      for (var i = 1; i <= pages; i++) btn(String(i), i, { current: i === n });
+      btn('›', n + 1, { disabled: n === pages, aria: '下一頁' });
+      if (scroll) list.closest('section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    show(1, false);
+  });
 })();
