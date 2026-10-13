@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MCES 進階報表產生器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1c2a3a; --ink-2:#4a5a6c; --ink-3:#7c8a99;
+  --paper:#f5f7f9; --surface:#ffffff; --line:#dde3e9; --line-2:#c9d2db;
+  --accent:#1b6b73; --accent-2:#e3f0f1;
+  --b1:#1b6b73; --b2:#7fb8bc; --b3:#e6c27f; --b4:#d9776b;
+  --danger:#b3413a;
+  --font:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Heiti TC",system-ui,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#e6ecf1; --ink-2:#b3bfca; --ink-3:#8594a3;
+    --paper:#141b22; --surface:#1c252e; --line:#2c3843; --line-2:#3a4855;
+    --accent:#5fb3ba; --accent-2:#1f3438; --danger:#e0776f;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#e6ecf1; --ink-2:#b3bfca; --ink-3:#8594a3;
+  --paper:#141b22; --surface:#1c252e; --line:#2c3843; --line-2:#3a4855;
+  --accent:#5fb3ba; --accent-2:#1f3438; --danger:#e0776f;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.6}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1280px;margin:0 auto;padding:28px 24px 64px}
+
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+h1{font-size:26px;font-weight:700;letter-spacing:.02em;margin:0;line-height:1.3}
+.privacy{color:var(--ink-3);font-size:13px;margin:0}
+.scale{display:grid;grid-template-columns:repeat(4,1fr);margin:16px 0 28px;border-radius:3px;overflow:hidden}
+.scale span{font-size:12px;padding:3px 8px;color:#fff;font-weight:500}
+.scale span:nth-child(1){background:var(--b1)}
+.scale span:nth-child(2){background:var(--b2);color:#10333a}
+.scale span:nth-child(3){background:var(--b3);color:#4a3510}
+.scale span:nth-child(4){background:var(--b4)}
+
+.uploads{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.drop{position:relative;border:1.5px dashed var(--line-2);border-radius:8px;padding:18px 20px;background:var(--surface);transition:border-color .15s,background .15s}
+.drop.over{border-color:var(--accent);background:var(--accent-2)}
+.drop.ok{border-style:solid;border-color:var(--accent)}
+.drop h2{font-size:16px;margin:0 0 2px;font-weight:700}
+.drop p{margin:0;color:var(--ink-2);font-size:13px}
+.drop .status{margin-top:10px;font-size:13px;color:var(--accent);font-weight:500;min-height:1.6em}
+.drop .status.err{color:var(--danger)}
+.drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.opt{font-weight:400;color:var(--ink-3);font-size:13px}
+
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;margin:22px 0 0;padding:12px 16px;background:var(--surface);border:1px solid var(--line);border-radius:8px;font-size:14px}
+.bar .n{font-weight:700;font-size:15px}
+.bar label{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.bar input[type=number]{width:64px;padding:3px 6px;border:1px solid var(--line-2);border-radius:4px;background:var(--paper)}
+.bar .grp{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
+.bar .lbl{color:var(--ink-3)}
+
+nav.tabs{display:flex;align-items:flex-end;gap:4px;margin:28px 0 0;border-bottom:1px solid var(--line-2)}
+nav.tabs button{background:none;border:0;padding:10px 18px;font-size:16px;font-weight:500;color:var(--ink-2);border-bottom:3px solid transparent;margin-bottom:-1px}
+nav.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+nav.tabs .spacer{flex:1}
+.btn{border:1px solid var(--line-2);background:var(--surface);border-radius:6px;padding:6px 12px;font-size:13px;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.08);color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+nav.tabs .btn{margin-bottom:8px}
+
+section.panel{padding-top:24px}
+section.panel[hidden]{display:none}
+h3.sec{font-size:18px;margin:32px 0 12px;font-weight:700}
+h3.sec:first-child{margin-top:0}
+.sub{color:var(--ink-2);font-size:13px;margin:-8px 0 14px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px}
+.grid.wide{grid-template-columns:repeat(auto-fill,minmax(520px,1fr))}
+.fig{background:#fff;border:1px solid var(--line);border-radius:6px;padding:12px 12px 8px;color:#1c2a3a}
+.fig .cv{position:relative;width:100%}
+.fig .foot{display:flex;justify-content:flex-end;padding-top:6px}
+.fig .foot .btn{background:#fff;color:#1c2a3a;border-color:#d5dce3;font-size:12px;padding:4px 10px}
+.fig .foot .btn:hover{color:#1b6b73;border-color:#1b6b73}
+
+.tbl-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:500;color:var(--ink-2);background:var(--paper);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.num{text-align:right;white-space:nowrap}
+td.desc{min-width:320px;color:var(--ink-2);font-size:13px}
+.dim-block{display:grid;grid-template-columns:minmax(300px,420px) 1fr;gap:16px;align-items:start;margin-bottom:22px}
+
+.bench{display:grid;grid-template-columns:320px 1fr;gap:24px;align-items:start}
+.editor{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;max-height:calc(100vh - 40px);overflow:auto}
+.editor label.f{display:block;font-size:13px;color:var(--ink-2);margin-bottom:4px}
+.editor select{width:100%;padding:7px 8px;border:1px solid var(--line-2);border-radius:5px;background:var(--paper)}
+.editor .hint{font-size:12px;color:var(--ink-3);margin:10px 0 8px;line-height:1.5}
+.gl{list-style:none;margin:0;padding:0}
+.gl li{display:grid;grid-template-columns:20px 1fr 36px 44px;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid var(--line)}
+.gl li.off{opacity:.45}
+.gl .raw{font-size:11px;color:var(--ink-3);grid-column:2/5;margin-top:-4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gl input[type=text]{width:100%;padding:3px 6px;border:1px solid var(--line-2);border-radius:4px;background:var(--paper);font-size:14px}
+.gl .cnt{font-size:12px;color:var(--ink-3);text-align:right}
+.gl .mv{display:flex;gap:2px}
+.gl .mv button{border:1px solid var(--line-2);background:var(--paper);border-radius:3px;width:20px;height:22px;padding:0;font-size:11px;line-height:1}
+.editor .row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.chk{display:flex;align-items:center;gap:6px;font-size:13px;margin-top:10px}
+
+.group-head{display:flex;align-items:baseline;gap:10px;margin:34px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--ink)}
+.group-head h4{margin:0;font-size:18px}
+.group-head span{color:var(--ink-3);font-size:13px}
+.sw{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;margin:0 0 10px;color:var(--ink-2)}
+.sw b{color:var(--ink);font-weight:500}
+
+.empty{padding:60px 20px;text-align:center;color:var(--ink-3);border:1px dashed var(--line-2);border-radius:8px;margin-top:28px}
+.addpie{display:flex;gap:8px;align-items:center;margin:0 0 14px;flex-wrap:wrap;font-size:14px}
+.addpie select{padding:5px 8px;border:1px solid var(--line-2);border-radius:5px;background:var(--surface)}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:8px 16px;border-radius:6px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+.warn{font-size:13px;color:var(--danger);margin:8px 0 0}
+
+@media (max-width:860px){
+  .uploads{grid-template-columns:1fr}
+  .bench{grid-template-columns:1fr}
+  .editor{position:static;max-height:none}
+  .dim-block{grid-template-columns:1fr}
+  .grid,.grid.wide{grid-template-columns:1fr}
+  nav.tabs{flex-wrap:wrap}
+  nav.tabs button{padding:8px 12px;font-size:15px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>MCES 進階報表產生器</h1>
+    <p class="privacy">資料只在你的瀏覽器內處理，不會上傳到任何地方。</p>
+  </header>
+  <div class="scale" aria-label="分數區間色彩"><span>85 分以上</span><span>51–84 分</span><span>16–50 分</span><span>15 分以下</span></div>
+
+  <div class="uploads">
+    <div class="drop" id="dropScore">
+      <h2>分數資料</h2>
+      <p>MCES 匯出的分數檔（xlsx / csv），需含「人員編號」與 20 項能力分數。</p>
+      <div class="status" id="stScore"></div>
+      <input type="file" accept=".xlsx,.xls,.csv" id="fScore" aria-label="上傳分數資料">
+    </div>
+    <div class="drop" id="dropPerson">
+      <h2>人員資料 <span class="opt">選填</span></h2>
+      <p>含「人員編號」與自訂標籤欄位的人員檔。校標分析的分群欄位都從這裡來。</p>
+      <div class="status" id="stPerson"></div>
+      <input type="file" accept=".xlsx,.xls,.csv" id="fPerson" aria-label="上傳人員資料">
+    </div>
+  </div>
+
+  <div id="app" hidden>
+    <div class="bar">
+      <span class="n" id="nLabel"></span>
+      <span class="grp" id="explainGrp"></span>
+      <label><span class="lbl">優勢／弱勢門檻</span><input type="number" id="th" value="60" min="0" max="100"></label>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="bg" aria-selected="true">背景資訊</button>
+      <button role="tab" data-tab="overall" aria-selected="false">整體</button>
+      <button role="tab" data-tab="bench" aria-selected="false">校標分析</button>
+      <span class="spacer"></span>
+      <button class="btn primary" id="zipBtn">下載本頁所有圖（ZIP）</button>
+    </nav>
+    <section class="panel" id="p-bg"></section>
+    <section class="panel" id="p-overall" hidden></section>
+    <section class="panel" id="p-bench" hidden>
+      <div class="bench">
+        <aside class="editor" id="editor"></aside>
+        <div id="benchOut"></div>
+      </div>
+    </section>
+  </div>
+  <div class="empty" id="emptyState">先上傳分數資料，圖表會自動產生。</div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script>
+const TEXT = {"desc": {"團隊建立與合作": {"85分以上": "能夠有效地運用合適之人才建立團隊，並協助讓成員瞭解團隊的願景及組織方向，協助團隊建立共識，使成員創造更高的績效與達成團體目標的表現。", "51-84分": "能在團隊建立中擔當適當角色，共同維持其正常運作，個人在團隊中能有一定的貢獻，也能夠配合團隊的要求與行動，以達成原訂的績效與目標。", "16-50分": "建議應多去嘗試了解更多成員之特質，增加更多與團隊互動的機會，鼓勵與協助成員有更佳的表現。應多參與團隊整體目標的建立，提升自己對團隊的影響力。建議可多參與相關能力培訓課程。", "15分以下": "建議未來應多參與團隊任務，從與成員互動過程中，加以了解其他成員的不同特質，以利未來建立新的團隊時，能因應團隊目標建立成員彼此的共識藉由團隊的有效運作達成整體的績效。建議應積極參與相關能力培訓計畫。"}, "團隊衝突管理": {"85分以上": "在面對團隊衝突時，能夠有效地化解與管理衝突，並能將衝突進一步轉化為提升團隊進步之動力，以促進團隊整體的表現。", "51-84分": "在面對團隊衝突時，能夠適時地體察團隊所發生的衝突，並能適度地解決一般衝突的狀況，讓衝突不置於對整體的表現有過多的影響。", "16-50分": "在處理團隊衝突時，對於一般衝突的解決能力尚可。建議未來在面臨衝突時，應多設法瞭解衝突產生的原因，並透過各種管道解決，以降低衝突對團隊績效的影響。建議亦可多參與相關能力培訓課程。", "15分以下": "在處理團隊衝突時，應多嘗試瞭解團隊衝突的真正原因，並積極地找尋解決的方案，以提升整體團隊的運作績效。建議應積極參與相關能力培訓計畫。"}, "培養與輔導部屬": {"85分以上": "非常能夠觀察及輔導部屬，以協助部屬做良好的自我調適，並能夠尊重及放心的授予他人在工作上的決策權力，且對於能營造非常好的環境讓部屬成長與學習。", "51-84分": "在輔導部屬上，具有基本的觀察和輔導能力並在工作上的授權能有一定程度的授予，且具備有基本營造員工發展與學習的能力。", "16-50分": "在培育與輔導部屬時，應多嘗試協助他人渡過難關，並能多一點尊重他人的工作方式。也可適度地提供學習環境，使員工能夠在良好的環境下提升自我能力。建議可多參與相關能力培訓課程。", "15分以下": "在培育與輔導部屬時，建議應嘗試多觀察部屬工作方式，並適時地協助與鼓勵部屬。在適當時機可適度地授權。另，還需多嘗試了解員工之需求，並能提供其訓練及發展的機會。建議應積極參與相關能力培訓計畫。"}, "同理心": {"85分以上": "在與他人溝通互動時，非常能夠設身處地的理解他人的感受想法與需求，並且能夠完全發自內心地尊重他人。", "51-84分": "在與他人溝通互動時，能夠適度地發掘了解他人的內心感受及需求，並且能夠對他人有一定程度上的尊重。", "16-50分": "在與他人溝通互動時，尚能理解他人感受及需求，建議未來與他人互動時，應更設身處地的從他人的角度出發，以對方觀點看待事件的來由，方能由內心真誠的尊重對方想法。建議可多參與相關能力培訓課程。", "15分以下": "在與他人溝通互動時，應多嘗試從他人的表現及行為發掘他人的感受及需求，嘗試以對方的處境，以設身處地的感覺體察對方的情緒，如此能客觀的理解對方的行為或情緒，達到自內心地尊重對方。建議應積極參與相關能力培訓計畫。"}, "人際互動": {"85分以上": "能積極主動地發展人際關係，迅速建立豐富的人脈關係，且能瞭解及善用人際互動中的訊息進行有效的溝通，並運用於工作上的推展。", "51-84分": "能主動地發展人際關係，建立一定的人脈關係，且能有一定程度地瞭解人際互動中的訊息，增加溝通的暢通，並運用於工作上的推展。", "16-50分": "在發展人際關係上主動性較低，建議未來可多主動參與更多的人際活動。透過人際互動的過程來練習傾聽與溝通的技巧，此技巧將有利於建立人脈關係，對工作上能有所助益，亦可多參與相關能力培訓課程。", "15分以下": "建議應多主動參與更多的人際活動，運用人脈去達成目標。在與人互動中透過傾聽來理解對方所要表達之訊息，藉以培養增進瞭解對方需求的能力，來達到良善溝通的品質。建議應積極參與相關能力培訓計畫。"}, "思考與分析": {"85分以上": "能夠採用不同的角度思考及分析問題，且具有良好的歸納的能力，能夠找出事物間的脈絡與因果關係，並能進一步提出解決問題的方法。", "51-84分": "具有基本的分析、思考以及歸納的能力，也同時能夠找出其共通的基本規則及解決方式。", "16-50分": "在處理問題時，可多嘗試採用不同的角度來思考問題，並可以多觀察他人解決問題的方式，來增進個人對解決問題的歸納與分析能力。建議可多參與相關能力培訓課程。", "15分以下": "建議應多採用不同方向的思考方式去分析解決問題，並且針對別人視之當然想法加以檢視，進一步找出當中之規則，思考問題形成之原因及可能的解決步驟。建議應積極參與相關能力培訓計畫。"}, "策略規劃": {"85分以上": "能夠主動了解及分析組織策略和需求，收集內外部之相關資訊以制定目標。且能了解市場之需求和競爭環境，以訂定有效的市場策略。", "51-84分": "對於分析組織策略和需求有一定程度的能力，並能收集內外部之相關基本資訊以制定目標，理解市場之需求和競爭環境，並能訂定相合宜的市場策略。", "16-50分": "應更主動瞭解與分析組織策略和需求，並更積極地收集內外部之相關資訊以制定目標，協助自己能更了解市場之需求和競爭環境，嘗試制定出更有效的市場策略。建議可多參與相關能力培訓課程。", "15分以下": "對於分析組織策略和需求應多多接觸與嘗試，透過收集內外部之相關資訊以制定目標，了解市場之需求和競爭環境，並訂定相合宜的市場策略。建議應積極參與相關能力培訓計畫。"}, "工作計畫制定與管控": {"85分以上": "能夠妥善地瞭解組織需求以規劃工作目標及制定可行的行動計畫，有效地達成組織任務。同時能夠清楚掌握自己的工作進度及目標，並且透過流程及結果的檢視，確認自己的工作成果。", "51-84分": "對組織需求有一定程度的瞭解，能夠針對需求制定出適宜的工作目標與行動計畫。也能對自己的工作進度及內容有一定的執行效率和掌控能力。", "16-50分": "對於工作計畫的制訂與管控的能力尚可，建議未來應嘗試制定完善及可行之行動計畫和目標，以達成更高之組織任務，並且應回顧工作流程以找出問題點加以改善。建議可多參與相關能力培訓課程。", "15分以下": "對於工作計畫的制訂與管控的能力較弱，建議未來應嘗試制定明確的工作目標，及具可行性之行動計畫，以達成組織任務，並且應回顧工作流程以找出問題點加以改善。另，可多進修與流程管控之相關課程。"}, "績效管理": {"85分以上": "能熟知他人在工作上之成果，並能客觀地評估他人表現及給予適當而明確的回饋，且協助他人進行工作缺失的改善。", "51-84分": "能了解他人在工作上之成果，並能從較客觀的角度評估他人表現，及給予適切的回饋，且具有一定程度能協助他人進行工作缺失的改善。", "16-50分": "擔任主管職務時，建議應多對成員的工作目標加以了解，並嘗試針對已進行之評估結果進行回饋，並和成員共同制定改善計畫。建議可多參與相關能力培訓課程。", "15分以下": "在擔任主管職務時，應自我要求多對團隊成員的工作目標加以了解，依據成員的能力提出相對應的工作要求以及合理的績效標準。建議應積極參與相關能力培訓計畫。"}, "評估問題": {"85分以上": "具有足夠能力可以界定、收集資訊和評估狀況，並且對問題有高度的敏銳度，能夠找出其潛在和核心問題。", "51-84分": "能夠界定、收集資訊和評估狀況，並且對問題具有一定程度的敏銳度，也時常能夠找出其潛在和核心問題。", "16-50分": "在面對問題時，建議應從多方收集相關資訊與評估所面臨的問題，並應對潛在的問題保持較高的敏感度與觀察。建議可多參與相關能力培訓課程。", "15分以下": "在面對問題時的敏感度較低，建議未來在處理問題時應多從各方面收集相關資訊以及評估，或是尋求他人的專業建議，以利找出其潛在之問題及核心狀況。建議應積極參與相關能力培訓計畫。"}, "風險評估": {"85分以上": "能夠有效地評估組織所屬的環境風險對組織的影響下，所做出的適當的決策，並能以此為基礎做出替代方案，儘管失敗也能在可承受的範圍。", "51-84分": "能夠適當地評估組織所屬的環境風險對組織的影響下，所做出的適當的決策，並能以此為基礎做出替代方案，嘗試在可接受的風險範圍內承受失敗。", "16-50分": "對評估組織所屬的環境風險對組織的影響下，需做出對應的決策感到壓力感。多觀察他人能以此為基礎做出替代方案的能力如何培養外，並嘗試在可接受的風險範圍內承受失敗的應對態度。建議可多參與相關能力培訓課程。", "15分以下": "不擅長評估組織所屬的環境風險對組織的影響，在必須做出對應的決策感到壓力感。多觀察他人能以此為基礎做出替代方案的能力如何培養，或適當的接受他人的協助。嘗試培養在可接受的風險範圍內承受失敗的應對態度。建議應積極參與相關能力培訓計畫。"}, "情緒管理": {"85分以上": "當情緒或環境變化時，都能做良好的自我調適，隨時保持正向的思考，並能勇於面對壓力或挫折，自行尋找資源或對策來處理。", "51-84分": "當情緒或環境變化時，能適當的做妥善的自我調適，盡其所能的保持正向的思考，並能提醒自己以正面態度面對壓力或挫折，尋找資源或對策來處理。", "16-50分": "應多練習在負面情緒出現時，保持更正向的思考，在一定時間內，採取合宜的對策，也可多多閱讀相關問題解決的個案或參與情緒管理的相關的課程，更加提升自我的情緒管控能力。", "15分以下": "應多練習在負面情緒出現時，多運用正向思考的想法來引導自己，不急於採取任何的思考或對策，亦可和有經驗的人或輔導人員一起探討自己的情緒狀況。建議應積極參與相關能力培訓計畫。"}, "自我挑戰": {"85分以上": "在工作中能自動自發的學習，並能主動積極地爭取表現的機會，使個人的優勢能在組織中不斷地創造價值。", "51-84分": "在工作中能因應適時地的學習吸收，並能主動爭取表現的機會，在組織中能保有一定的付出貢獻。", "16-50分": "在工作中，主動爭取機會的動機較弱，建議未來在工作中應更主動爭取環境資源，使自己有更多發揮優勢的機會，展現出自己的貢獻。建議可多參與自我挑戰之訓練課程。", "15分以下": "在工作中，主動爭取表現機會的動機偏低，建議未來在工作中應主動爭取環境資源，找出發揮優勢的機會，使自己在組織中更能發揮優勢。建議應積極參與自我挑戰之訓練課程。"}, "覺察情緒": {"85分以上": "很能覺察自己與他人的情緒，並能適當地表達出自己的情緒，來增進工作的表現。", "51-84分": "大部分的時候都能覺察自己與他人的情緒，並能適當地表達出自己的情緒，來增進工作的表現。", "16-50分": "在察覺個人與他人情緒的能力上尚可，建議未來在處理個人與他人情緒時，可事先規劃合宜的情緒反應，並預做演練。建議可多參與相關能力培訓課程。", "15分以下": "在察覺個人與他人情緒的能力上需加強，建議未來可先由多觀察他人與自己的情緒開始累積對情緒的敏感度。建議應積極參與相關能力培訓計畫。"}, "開發潛能": {"85分以上": "頗能善用自己的優勢與特長，積極創造機會，並不斷地追求自我突破以及開發自己的潛能。", "51-84分": "能運用自己的優勢與特長，增加個人表現的機會，有時也能適度地追求自我突破以及開發自己的潛能。", "16-50分": "建議在組織中應學習從更寬廣的角度來看個人在組織發展的機會，有機會可多參與激發潛能之相關課程。", "15分以下": "建議應多多觀察與運用自己的優勢與特長，增加個人表現的機會，並增進個人追求自我突破以及開發自己的潛能的動機。建議應積極參與激發潛能培訓計畫。"}, "瞭解自我": {"85分以上": "能清楚的了解自己的各種特質與需求及興趣，並能妥善將自己的優勢與特質反應到自己的工作與生活上。", "51-84分": "對於個人的特質與需求及興趣有一定程度的瞭解，也能適度地將自己的部分優勢與特質發揮在工作上。", "16-50分": "對於個人的特質與需求及興趣的瞭解程度尚可，建議未來能針對個人的優勢與特質更進一步的分析與瞭解，以利發揮個人最大的效能。建議可多參與自我探索之訓練課程。", "15分以下": "對於個人的各種特質、需求及興趣的瞭解程度較弱，建議未來可多從一些能力、性向或興趣等心理測驗瞭解個人的優勢，並整理自己過去的表現，以利個人在工作上的發揮。建議應積極參與自我探索之訓練課程"}, "知識學習與傳遞": {"85分以上": "能驅動自己學習精進，並且非常樂於與組織成員分享知識與經驗，使內部知識得以順利傳遞與廣泛交流。", "51-84分": "願意不斷的學習汲取新知，也願意和他人一起分享知識與經驗，使內部知識得以傳遞流通與廣泛交流。", "16-50分": "對於累積知識與他人分享知識的動機較低，未來建議可從練習當講師、學習團體的主持人或企劃學習活動開始學習與他人分享知識。建議可多參與相關能力培訓課程。", "15分以下": "對於累積知識與他人分享知識的動機不足，建議未來可以多參加的學習活動或團體，以激發自己的學習的意願。建議應積極參與相關能力培訓計畫。"}, "知識運用與創新": {"85分以上": "能夠將知識加以組織並創新，能主動將新知識應用到組織改善，並落實推廣到組織內部，並滿足內外部客戶需求。", "51-84分": "能建議或配合將新知識應用落實到組織改善的活動，進而滿足內外部客戶的需求。", "16-50分": "將新知識的活用於組織中的能力尚可，建議未來可以多多參與組織改善專案計劃或活動，亦可多參與相關能力培訓課程。", "15分以下": "將新知識的活用於組織中的能力較弱，建議未來可以多擔任專案的要角，配合推動組織改善專案。建議應積極參與相關能力培訓計畫。"}, "知識統整": {"85分以上": "能清楚知道運用在組織的運作中的各種知識，並能良好地建議、分享及教導這些知識的運用。", "51-84分": "對於組織運作中的各種知識應用有一定程度的瞭解，且能教導、分享這些知識的基本應用。", "16-50分": "對於組織內部流通的知識在接收與瞭解的程度尚可，建議未來應多將資訊與知識做更有系統化的整理，並嘗試將知識多分享給他人。建議可多參與相關能力培訓課程。", "15分以下": "對於組織內部流通的知識在接收與瞭解的程度較低，建議未來應學習做系統化的統整，與如何將知識分享給他人。可多多接觸組織所提供之相關資訊與知識，並應積極參與相關能力培訓計畫。"}, "資料整理與轉化": {"85分以上": "能將資料作相當完整的分類、分析、整理。對資料或訊息很敏感，能從資料中找出關鍵或關聯，進而轉化成有用的資訊。", "51-84分": "能將資料作適度的分類、分析、整理。對資料或訊息有一定程度的敏感，能從資料中找出關鍵或關聯，進而轉化成可用的資訊。", "16-50分": "對資料或訊息的敏感度較弱，建議可參考較完善的資料收集方式，以便強化對訊息的敏感度。建議可多參與相關能力培訓計畫。", "15分以下": "建議需建立收集資料的習慣，設法提昇對訊息的好奇心和敏感度，並經常參考別人整理及分析資料的方式。建議應積極參與相關能力培訓計畫。"}}, "course": {"團隊建立與合作": "領導統禦-提升團隊管理力、高績效團隊建立-團隊目標/團隊成員/成員角色定位/成員發展/團隊合作/問題與對策（組織溝通）/激勵激發、打造共好的卓越團隊 => 建立共識與提升凝聚力/向心力、 價值領導團隊Run起來、抓對主管心思的向上管理技巧", "團隊衝突管理": "職場夥伴關係與衝突管理、員工問題發現與處理、組織衝突與溝通協調處理及有效預防衝突的方法", "培養與輔導部屬": "部屬培育與啟發（工作教導）、關鍵人才培育與經驗傳承、成為職場新世代的犀利領導、MTP主管卓越管理才能發展培訓、有效授權-從優秀邁向卓越的領導智慧、賦能/充分（有效）授權/激勵激發、員工發展（跨領域 、多元專業培養）", "同理心": "聆聽、帶人帶心向下管理、EQ情緒管理（高EQ者的「向上管理」工作術）", "人際互動": "溝通技巧、商務談判、職場與職務之認知與溝通協調、跨部門溝通與協調（讓跨部門溝通協調順暢的6技巧） => 溝通力/談判力", "思考與分析": "六頂思考帽、資料/資訊/數據解析", "策略規劃": "企業戰略規劃與實施方案（年度計劃）、戰略規劃與經營決策（戰略地圖）", "工作計畫制定與管控": "職場與職務之認知與溝通協調、高效率工作管理（時間管理）、MBO目標管理（連結企業文化）、溝通與協調", "績效管理": "MBO目標管理、績效考核、有效激發部屬的績效面談技巧、預算管理與控管績效、人才管理與傳承", "評估問題": "問題分析與解決、員工問題發現與處理、組織衝突與溝通協調處理及預防方法、變革管理、原因分析與決策（心智圖的實務應用）", "風險評估": "組織變革管理（變革中的領導）、風險評估與管理、危機處理", "情緒管理": "提升EQ能力、職場紓壓方式（AQ壓力管理）", "自我挑戰": "職涯發展探索、工作價值與願景、自我突破邁向巔峰", "覺察情緒": "職場紓壓方法、新時代的自我管理法則、壓力管理與化解衝突、覺察力工作坊", "開發潛能": "特質探索與個人優勢發展、建構個人職場優勢", "瞭解自我": "特質探索與個人優勢發展、自我定位與職涯規劃、職涯教練", "知識學習與傳遞": "KM知識管理、建立知識庫（詞庫/題庫/Q&A/FAQ）、建立工作標準（SOP）", "知識運用與創新": "職場環境的學習與創新、創新思考與技巧、前瞻力-創新思維與創新管理", "知識統整": "Big Data統合（管理與運用）、建立學習型組織（推動與應用）", "資料整理與轉化": "KM知識管理、效益式檔案管理、新世代科技達人（資訊科技發展與應用）"}};
+const DIMS = [
+  {name:'人的管理', items:['團隊建立與合作','團隊衝突管理','培養與輔導部屬','同理心','人際互動']},
+  {name:'事的管理', items:['思考與分析','策略規劃','工作計畫制定與管控','績效管理','評估問題','風險評估']},
+  {name:'自我管理', items:['情緒管理','自我挑戰','覺察情緒','開發潛能','瞭解自我']},
+  {name:'知識管理', items:['知識學習與傳遞','知識運用與創新','知識統整','資料整理與轉化']},
+];
+const ITEMS = DIMS.flatMap(d=>d.items);
+const BANDS = [
+  {k:'85分以上', c:'#1b6b73', fg:'#fff', t:v=>v>=85},
+  {k:'51-84分', c:'#7fb8bc', fg:'#10333a', t:v=>v>=51&&v<85},
+  {k:'16-50分', c:'#e6c27f', fg:'#4a3510', t:v=>v>=16&&v<51},
+  {k:'15分以下', c:'#d9776b', fg:'#fff', t:v=>v<16},
+];
+const PAL = ['#1b6b73','#d98c3f','#4b6fa8','#8c5a9e','#6a9a3c','#c4534a','#3aa0a8','#b8963a','#6d7b8a','#d46a9a','#2f4f6f','#9fb04a'];
+const SKIP_FIELDS = new Set(['人員編號','姓名','生日','施測時間','Email','聯絡電話','到職日','離職日','備註','附加說明2','人員備註','年齡','特殊報表類型',...ITEMS,...DIMS.map(d=>d.name)]);
+const FONT = '"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif';
+
+const S = {score:null, person:null, rows:[], fields:[], explainOff:new Set(), th:60,
+  tab:'bg', charts:{bg:[],overall:[],bench:[]}, extraPies:[], benchField:null, benchCfg:{}, showAll:true};
+const DLP = (async()=>{try{if(window.claude&&typeof window.claude.use==='function')return await window.claude.use('downloads')}catch(e){}return null})();
+
+/* ---------- helpers ---------- */
+const $ = s=>document.querySelector(s);
+const el = (tag, attrs={}, ...kids)=>{const e=document.createElement(tag);for(const[k,v]of Object.entries(attrs)){if(k==='class')e.className=v;else if(k==='text')e.textContent=v;else if(k.startsWith('on'))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v)}for(const c of kids)if(c!=null)e.append(c);return e};
+const norm = h=>String(h??'').replace(/[*＊]/g,'').replace(/\s+/g,'').trim();
+const canon = h=>{const n=norm(h);const s=n.replace(/(的)?能力$/,'');return ITEMS.includes(s)?s:n};
+const num = v=>{if(v===null||v===undefined||v==='')return NaN;const n=typeof v==='number'?v:parseFloat(String(v).replace(/[^\d.\-]/g,''));return n};
+const avg = a=>{const b=a.filter(x=>!isNaN(x));return b.length?b.reduce((s,x)=>s+x,0)/b.length:NaN};
+const r0 = x=>isNaN(x)?NaN:Math.round(x);
+const pct = x=>isNaN(x)?'–':(x*100).toFixed(1)+'%';
+const safe = s=>String(s).replace(/[\\/:*?"<>|\s]+/g,'_');
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2600)}
+function bandOf(v){return BANDS.find(b=>b.t(v))}
+
+/* ---------- file parsing ---------- */
+function readFile(file){
+  return new Promise((res,rej)=>{
+    const fr=new FileReader();
+    fr.onload=()=>{try{res(XLSX.read(new Uint8Array(fr.result),{type:'array',cellDates:true}))}catch(e){rej(e)}};
+    fr.onerror=()=>rej(fr.error);
+    fr.readAsArrayBuffer(file);
+  });
+}
+function findTable(wb, want){
+  // want: 'score' | 'person'
+  let best=null;S._why='';
+  for(const name of wb.SheetNames){
+    const aoa=XLSX.utils.sheet_to_json(wb.Sheets[name],{header:1,raw:true,defval:null,blankrows:false});
+    for(let i=0;i<Math.min(aoa.length,12);i++){
+      const hdr=(aoa[i]||[]).map(canon);
+      if(!hdr.includes('人員編號'))continue;
+      const nItems=ITEMS.filter(x=>hdr.includes(x)).length;
+      const isScore=nItems>=10;
+      if((want==='score'&&isScore)||(want==='person'&&!isScore)){
+        const cand={name,aoa,hi:i,hdr,nItems};
+        if(!best||(want==='score'?nItems>best.nItems:false))best=cand;
+      }
+      if(want==='score'&&!isScore)S._why=`「${name}」有人員編號，但只認得 ${nItems} 項能力欄位（需至少 10 項）。`;
+      break;
+    }
+  }
+  if(!best)return null;
+  // de-duplicate headers
+  const seen={};const hdr=best.hdr.map((h,j)=>{let k=h||('欄'+(j+1));if(seen[k]){seen[k]++;k=k+'（'+seen[k]+'）'}else seen[k]=1;return k});
+  const rows=[];
+  for(let i=best.hi+1;i<best.aoa.length;i++){
+    const r=best.aoa[i];const id=r[hdr.indexOf('人員編號')];
+    if(id===null||id===undefined||String(id).trim()==='')continue;
+    const o={};hdr.forEach((h,j)=>{const v=r[j];o[h]=typeof v==='string'?v.trim():v});o['人員編號']=String(id).trim();rows.push(o);
+  }
+  return {sheet:best.name,headers:hdr,rows};
+}
+
+async function handle(kind,file){
+  const st=kind==='score'?$('#stScore'):$('#stPerson');
+  const box=kind==='score'?$('#dropScore'):$('#dropPerson');
+  st.className='status';st.textContent='讀取中…';
+  try{
+    const wb=await readFile(file);
+    const t=findTable(wb,kind);
+    if(!t){
+      st.className='status err';
+      st.textContent=kind==='score'?('找不到分數表。'+(S._why||'前 12 列內沒有「人員編號」欄。')):'找不到人員表：前 12 列內沒有「人員編號」欄。';
+      box.classList.remove('ok');return;
+    }
+    if(kind==='score'){
+      const miss=ITEMS.filter(x=>!t.headers.includes(x));
+      S.score=t;
+      st.textContent=`${file.name}｜${t.rows.length} 筆`+(miss.length?`｜缺少欄位：${miss.join('、')}`:'');
+      if(miss.length)st.className='status err';
+    }else{
+      S.person=t;st.textContent=`${file.name}｜${t.rows.length} 筆`;
+    }
+    box.classList.add('ok');
+    build();
+  }catch(e){st.className='status err';st.textContent='無法讀取這個檔案：'+(e.message||e);box.classList.remove('ok')}
+}
+for(const [kind,inp,box] of [['score','#fScore','#dropScore'],['person','#fPerson','#dropPerson']]){
+  const i=$(inp),b=$(box);
+  i.addEventListener('change',()=>{if(i.files[0])handle(kind,i.files[0]);i.value=''});
+  b.addEventListener('dragover',e=>{e.preventDefault();b.classList.add('over')});
+  b.addEventListener('dragleave',()=>b.classList.remove('over'));
+  b.addEventListener('drop',e=>{e.preventDefault();b.classList.remove('over');const f=e.dataTransfer.files[0];if(f)handle(kind,f)});
+}
+
+/* ---------- merge ---------- */
+function ageOf(r){
+  let a=num(r['年齡']);if(!isNaN(a))return a;
+  const b=r['生日'];let d=b instanceof Date?b:(b?new Date(String(b).replace(/\./g,'-')):null);
+  if(!d||isNaN(d))return NaN;const n=new Date();a=n.getFullYear()-d.getFullYear();
+  if(n<new Date(n.getFullYear(),d.getMonth(),d.getDate()))a--;return a;
+}
+function build(){
+  if(!S.score)return;
+  const pmap=new Map();let pHeaders=[];
+  if(S.person){pHeaders=S.person.headers;for(const p of S.person.rows)pmap.set(p['人員編號'],p)}
+  const sH=S.score.headers;
+  const pKeys=pHeaders.filter(h=>h!=='人員編號');
+  let matched=0;
+  const all=S.score.rows.map(r=>{
+    const o={...r};const p=pmap.get(r['人員編號']);
+    if(p)matched++;
+    for(const h of pKeys)o['P:'+h]=p?p[h]:null;
+    for(const it of ITEMS)o[it]=num(o[it]);
+    for(const d of DIMS){const v=num(o[d.name]);o[d.name]=isNaN(v)?r0(avg(d.items.map(i=>o[i]))):v}
+    o.__age=ageOf(o);
+    o.__ageBin=isNaN(o.__age)?'未提供':o.__age<=20?'20歲以下':o.__age<=30?'21-30歲':o.__age<=40?'31-40歲':o.__age<=50?'41-50歲':'50歲以上';
+    o.__gen=isNaN(o.__age)?'未提供':o.__age>=60?'60及以上':(Math.floor(o.__age/10)*10)+'世代';
+    return o;
+  });
+  S.all=all;
+  if(S.person){$('#stPerson').textContent=$('#stPerson').textContent.split('｜對應')[0]+`｜對應到 ${matched} 筆`;}
+  // fields for grouping
+  const okH=h=>!SKIP_FIELDS.has(h)&&!/^欄\d+$/.test(h);
+  S.sH=sH;
+  S.benchAll=pKeys.filter(okH).map(h=>'P:'+h);
+  S.fieldsAll=[...sH.filter(okH),...S.benchAll,'__ageBin','__gen'];
+  $('#app').hidden=false;$('#emptyState').hidden=true;
+  buildExplain();
+  applyFilter();
+}
+function fieldLabel(f){if(f.startsWith('P:')){const h=f.slice(2);return S.sH&&S.sH.includes(h)?h+'（人員檔）':h}return f==='__ageBin'?'年齡區間（自動）':f==='__gen'?'世代（依年齡自動）':f}
+function buildExplain(){
+  const g=$('#explainGrp');g.innerHTML='';
+  if(!S.score.headers.includes('報表解釋力'))return;
+  const vals=[...new Set(S.all.map(r=>r['報表解釋力']??'(空白)'))];
+  g.append(el('span',{class:'lbl',text:'納入報表解釋力'}));
+  for(const v of vals){
+    const cb=el('input',{type:'checkbox'});cb.checked=!S.explainOff.has(v);
+    cb.addEventListener('change',()=>{cb.checked?S.explainOff.delete(v):S.explainOff.add(v);applyFilter()});
+    g.append(el('label',{},cb,String(v)));
+  }
+}
+function applyFilter(){
+  S.rows=S.all.filter(r=>!S.explainOff.has(r['報表解釋力']??'(空白)'));
+  $('#nLabel').textContent=`有效資料 N＝${S.rows.length}`;
+  const okU=f=>{const u=new Set(S.rows.map(r=>r[f]).filter(v=>v!=null&&v!==''));return u.size>=1&&u.size<=60};
+  S.fields=S.fieldsAll.filter(okU);
+  S.benchFields=S.benchAll.filter(okU);
+  if(!S.benchUserSet||!S.benchFields.includes(S.benchField)){
+    S.benchField=S.benchFields.find(f=>f.startsWith('P:[自訂]'))||S.benchFields[0]||null;
+  }
+  render();
+}
+
+/* ---------- stats ---------- */
+function stats(rows,th){
+  const n=rows.length;
+  const dims=DIMS.map(d=>{
+    const vals=rows.map(r=>r[d.name]).filter(v=>!isNaN(v));
+    const items=d.items.map(it=>{
+      const v=rows.map(r=>r[it]).filter(x=>!isNaN(x));
+      return {name:it,avg:r0(avg(v)),bands:BANDS.map(b=>v.length?v.filter(b.t).length/v.length:0)};
+    });
+    const valid=items.filter(i=>!isNaN(i.avg));
+    const mx=Math.max(...valid.map(i=>i.avg)),mn=Math.min(...valid.map(i=>i.avg));
+    const strong=valid.length&&mx>=th?valid.filter(i=>i.avg===mx).map(i=>i.name).join('、'):'–';
+    const weak=valid.length&&mn<th?valid.filter(i=>i.avg===mn).map(i=>i.name).join('、'):'–';
+    return {name:d.name,idx:r0(avg(vals)),bands:BANDS.map(b=>vals.length?vals.filter(b.t).length/vals.length:0),items,strong,weak};
+  });
+  return {n,dims};
+}
+
+/* ---------- charts ---------- */
+Chart.register(ChartDataLabels);
+Chart.defaults.font.family=FONT;Chart.defaults.font.size=13;Chart.defaults.color='#2b3a4a';
+Chart.defaults.plugins.datalabels.display=false;
+Chart.defaults.animation=false;
+const bgPlugin={id:'paper',beforeDraw(c){const{ctx,width,height}=c;ctx.save();ctx.globalCompositeOperation='destination-over';ctx.fillStyle='#fff';ctx.fillRect(0,0,width,height);ctx.restore()}};
+function titleOpts(title,subtitle){return{title:{display:true,text:title,font:{size:17,weight:'700'},color:'#1c2a3a',padding:{top:4,bottom:subtitle?2:12}},subtitle:{display:!!subtitle,text:subtitle||'',color:'#6b7a89',font:{size:12},padding:{bottom:12}}}}
+function figure(parent,tab,title,subtitle,config,ratio=1.5){
+  const cv=el('canvas');
+  const box=el('div',{class:'cv'},cv);box.style.aspectRatio=String(ratio);
+  const btn=el('button',{class:'btn',type:'button',text:'下載 PNG'});
+  const fig=el('div',{class:'fig'},box,el('div',{class:'foot'},btn));
+  parent.append(fig);
+  config.options=config.options||{};
+  config.options.responsive=true;config.options.maintainAspectRatio=false;
+  config.options.devicePixelRatio=3;
+  config.options.layout={padding:{left:8,right:16,bottom:4,top:0}};
+  config.options.plugins=Object.assign(titleOpts(title,subtitle),config.options.plugins||{});
+  config.plugins=[bgPlugin,...(config.plugins||[])];
+  const ch=new Chart(cv,config);
+  const fname=safe(title)+'.png';
+  S.charts[tab].push({ch,fname});
+  btn.addEventListener('click',()=>new Promise(r=>cv.toBlob(r,'image/png')).then(b=>save(b,fname)));
+  return ch;
+}
+function pieCfg(labels,data){
+  const tot=data.reduce((a,b)=>a+b,0);
+  return {type:'pie',data:{labels,datasets:[{data,backgroundColor:labels.map((_,i)=>PAL[i%PAL.length]),borderColor:'#fff',borderWidth:2}]},
+    options:{plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:12}},
+      datalabels:{display:ctx=>tot&&ctx.dataset.data[ctx.dataIndex]/tot>=.04,color:'#fff',font:{weight:'700',size:12},textAlign:'center',
+        formatter:(v)=>`${v}人\n${(v/tot*100).toFixed(1)}%`}}}};
+}
+function idxBarCfg(labels,data,color='#1b6b73'){
+  return {type:'bar',data:{labels,datasets:[{label:'總體指數',data,backgroundColor:color,borderRadius:3,maxBarThickness:64}]},
+    options:{plugins:{legend:{display:false},datalabels:{display:true,anchor:'end',align:'end',color:'#1c2a3a',font:{weight:'700'},formatter:v=>isNaN(v)?'':v}},
+      scales:{y:{min:0,max:100,ticks:{stepSize:20},grid:{color:'#eef1f4'}},x:{grid:{display:false}}}}};
+}
+function distCfg(labels,bandMatrix){
+  // bandMatrix[labelIdx][bandIdx] = fraction
+  return {type:'bar',data:{labels,datasets:BANDS.map((b,bi)=>({label:b.k,data:bandMatrix.map(m=>+(m[bi]*100).toFixed(1)),backgroundColor:b.c,
+      datalabels:{color:b.fg}}))},
+    options:{indexAxis:'y',plugins:{legend:{position:'bottom',labels:{boxWidth:12}},
+      datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>=6,font:{size:11,weight:'500'},formatter:v=>Math.round(v)+'%'},
+      tooltip:{callbacks:{label:c=>`${c.dataset.label}：${c.raw}%`}}},
+      scales:{x:{stacked:true,min:0,max:100,ticks:{callback:v=>v+'%'},grid:{color:'#eef1f4'}},y:{stacked:true,grid:{display:false}}}}};
+}
+function radarCfg(labels,sets){
+  return {type:'radar',data:{labels,datasets:sets.map((s,i)=>({label:s.label,data:s.data,borderColor:s.color,backgroundColor:s.color+'33',pointBackgroundColor:s.color,borderWidth:2,pointRadius:3,
+      datalabels:{display:sets.length===1,color:'#1c2a3a',align:'end',anchor:'end',font:{weight:'700',size:12}}}))},
+    options:{plugins:{legend:{display:sets.length>1,position:'bottom'}},
+      scales:{r:{min:0,max:100,ticks:{stepSize:20,backdropColor:'transparent',color:'#8a97a4',font:{size:10}},pointLabels:{font:{size:13},color:'#1c2a3a'},grid:{color:'#e3e8ec'},angleLines:{color:'#e3e8ec'}}}}};
+}
+function clusterCfg(labels,sets){
+  const many=labels.length*sets.length>36;
+  return {type:'bar',data:{labels,datasets:sets.map(s=>({label:s.label,data:s.data,backgroundColor:s.color,borderRadius:2,maxBarThickness:36}))},
+    options:{plugins:{legend:{position:'bottom',labels:{boxWidth:12}},
+      datalabels:{display:!many,anchor:'end',align:'end',color:'#1c2a3a',font:{size:10},formatter:v=>isNaN(v)?'':v}},
+      scales:{y:{min:0,max:100,ticks:{stepSize:20},grid:{color:'#eef1f4'}},x:{grid:{display:false},ticks:{autoSkip:false,maxRotation:0,callback:function(v){const l=this.getLabelForValue(v);return l.length>6?l.match(/.{1,5}/g):l}}}}}};
+}
+
+/* ---------- render ---------- */
+function destroy(tab){for(const c of S.charts[tab])c.ch.destroy();S.charts[tab]=[]}
+function render(){
+  for(const t of ['bg','overall','bench'])destroy(t);
+  if(S.tab==='bg')renderBg();else if(S.tab==='overall')renderOverall();else renderBench();
+}
+function countBy(rows,f,order){
+  const m=new Map();for(const r of rows){let v=r[f];v=(v==null||v==='')?'(空白)':String(v);m.set(v,(m.get(v)||0)+1)}
+  let keys=[...m.keys()];
+  if(order){keys=[...order.filter(k=>m.has(k)),...keys.filter(k=>!order.includes(k)).sort((a,b)=>m.get(b)-m.get(a))]}
+  else keys.sort((a,b)=>m.get(b)-m.get(a));
+  return {labels:keys,data:keys.map(k=>m.get(k))};
+}
+function renderBg(){
+  const p=$('#p-bg');p.innerHTML='';
+  const N=S.rows.length;
+  const add=el('div',{class:'addpie'});
+  const sel=el('select',{'aria-label':'選擇欄位'});
+  for(const f of S.fields)sel.append(el('option',{value:f,text:fieldLabel(f)}));
+  add.append(el('span',{text:'加一張圓餅圖：'}),sel,el('button',{class:'btn',type:'button',text:'加入',onclick:()=>{if(!S.extraPies.includes(sel.value)){S.extraPies.push(sel.value);render()}}}));
+  p.append(add);
+  const g=el('div',{class:'grid'});p.append(g);
+  const specs=[];
+  if(S.score.headers.includes('性別'))specs.push(['性別','性別',['男','女']]);
+  if(S.score.headers.includes('教育'))specs.push(['教育','教育程度',['國中','高中職','專科','大學','碩士','博士']]);
+  specs.push(['__ageBin','年齡區間',['20歲以下','21-30歲','31-40歲','41-50歲','50歲以上']]);
+  const genF=S.fields.find(f=>f!=='__gen'&&/世代/.test(fieldLabel(f)))||'__gen';
+  specs.push([genF,'世代',['20世代','30世代','40世代','50世代','60及以上']]);
+  for(const f of S.extraPies)specs.push([f,fieldLabel(f),null,true]);
+  for(const [f,t,order,removable] of specs){
+    const c=countBy(S.rows,f,order);
+    figure(g,'bg',t,`N＝${N}`,pieCfg(c.labels,c.data),1.1);
+    if(removable){const fig=g.lastElementChild;const rm=el('button',{class:'btn',type:'button',text:'移除',onclick:()=>{S.extraPies=S.extraPies.filter(x=>x!==f);render()}});fig.querySelector('.foot').prepend(rm);rm.style.marginRight='auto'}
+  }
+}
+function summaryTable(st){
+  const t=el('table');
+  t.append(el('thead',{},el('tr',{},...['管理特質','總體指數',...BANDS.map(b=>b.k),'優勢項','弱勢項'].map(h=>el('th',{text:h})))));
+  const tb=el('tbody');
+  for(const d of st.dims)tb.append(el('tr',{},el('td',{text:d.name}),el('td',{class:'num',text:isNaN(d.idx)?'–':d.idx}),...d.bands.map(b=>el('td',{class:'num',text:pct(b)})),el('td',{text:d.strong}),el('td',{text:d.weak})));
+  t.append(tb);return el('div',{class:'tbl-wrap'},t);
+}
+function renderOverall(){
+  const p=$('#p-overall');p.innerHTML='';
+  const st=stats(S.rows,S.th);const N=st.n;
+  p.append(el('h3',{class:'sec',text:'四大管理特質'}));
+  p.append(summaryTable(st));
+  const g=el('div',{class:'grid wide'});g.style.marginTop='16px';p.append(g);
+  figure(g,'overall','整體｜四大管理總體指數',`N＝${N}`,idxBarCfg(st.dims.map(d=>d.name),st.dims.map(d=>d.idx)),1.6);
+  figure(g,'overall','整體｜四大管理分數分布',`N＝${N}`,distCfg(st.dims.map(d=>d.name),st.dims.map(d=>d.bands)),1.6);
+  for(const d of st.dims){
+    p.append(el('h3',{class:'sec',text:d.name}));
+    p.append(el('p',{class:'sub',text:`優勢項：${d.strong}　弱勢項：${d.weak}`}));
+    const blk=el('div',{class:'dim-block'});p.append(blk);
+    const fg=el('div');blk.append(fg);
+    figure(fg,'overall',`整體｜${d.name}`,`各向度百分等級平均數｜N＝${N}`,radarCfg(d.items.map(i=>i.name),[{label:'整體',data:d.items.map(i=>i.avg),color:'#1b6b73'}]),1.05);
+    const t=el('table');
+    t.append(el('thead',{},el('tr',{},...['向度','平均',...BANDS.map(b=>b.k),'優勢發揮與建議'].map(h=>el('th',{text:h})))));
+    const tb=el('tbody');
+    for(const it of d.items){
+      const b=isNaN(it.avg)?null:bandOf(it.avg);
+      tb.append(el('tr',{},el('td',{text:it.name}),el('td',{class:'num',text:isNaN(it.avg)?'–':it.avg}),...it.bands.map(x=>el('td',{class:'num',text:pct(x)})),
+        el('td',{class:'desc',text:b?(TEXT.desc[it.name]?.[b.k]||''):''})));
+    }
+    t.append(tb);blk.append(el('div',{class:'tbl-wrap'},t));
+  }
+}
+
+/* ---------- bench editor ---------- */
+function cfgFor(f){
+  if(!S.benchCfg[f]){
+    const c=countBy(S.all,f);
+    S.benchCfg[f]=c.labels.map(v=>({raw:v,label:v,on:v!=='(空白)'}));
+  }else{
+    const known=new Set(S.benchCfg[f].map(x=>x.raw));
+    for(const v of countBy(S.all,f).labels)if(!known.has(v))S.benchCfg[f].push({raw:v,label:v,on:v!=='(空白)'});
+  }
+  return S.benchCfg[f];
+}
+function groupsFor(f){
+  const cfg=cfgFor(f);const order=[];const map=new Map();
+  for(const c of cfg){if(!c.on)continue;const L=c.label.trim()||c.raw;map.set(c.raw,L);if(!order.includes(L))order.push(L)}
+  const buckets=new Map(order.map(L=>[L,[]]));
+  for(const r of S.rows){let v=r[f];v=(v==null||v==='')?'(空白)':String(v);const L=map.get(v);if(L)buckets.get(L).push(r)}
+  return order.map(L=>({label:L,rows:buckets.get(L)})).filter(g=>g.rows.length);
+}
+let benchTimer;
+function benchRerender(){clearTimeout(benchTimer);benchTimer=setTimeout(()=>{destroy('bench');renderBenchOut()},250)}
+function renderEditor(){
+  const ed=$('#editor');ed.innerHTML='';
+  const sel=el('select',{id:'benchField'});
+  for(const f of S.benchFields){const u=new Set(S.rows.map(r=>r[f]).filter(v=>v!=null&&v!=='')).size;sel.append(el('option',{value:f,text:`${f.slice(2)}（${u} 類）`}))}
+  sel.value=S.benchField;
+  sel.addEventListener('change',()=>{S.benchField=sel.value;S.benchUserSet=true;renderBench()});
+  ed.append(el('label',{class:'f',for:'benchField',text:'校標欄位'}),sel);
+  ed.append(el('p',{class:'hint',text:'欄位來自人員資料。改「顯示名稱」可重新命名；多個值填同一個名稱就會合併成一群。取消勾選即排除，箭頭調整順序。'}));
+  const cfg=cfgFor(S.benchField);
+  const counts=countBy(S.rows,S.benchField);const cmap=new Map(counts.labels.map((l,i)=>[l,counts.data[i]]));
+  const ul=el('ul',{class:'gl'});
+  cfg.forEach((c,i)=>{
+    const cb=el('input',{type:'checkbox','aria-label':'納入 '+c.raw});cb.checked=c.on;
+    const inp=el('input',{type:'text',value:c.label,'aria-label':'顯示名稱'});
+    const li=el('li',{class:c.on?'':'off'});
+    cb.addEventListener('change',()=>{c.on=cb.checked;li.classList.toggle('off',!c.on);benchRerender()});
+    inp.addEventListener('change',()=>{c.label=inp.value;renderEditor();benchRerender()});
+    const up=el('button',{type:'button','aria-label':'上移',text:'▲',onclick:()=>{if(i>0){[cfg[i-1],cfg[i]]=[cfg[i],cfg[i-1]];renderEditor();benchRerender()}}});
+    const dn=el('button',{type:'button','aria-label':'下移',text:'▼',onclick:()=>{if(i<cfg.length-1){[cfg[i+1],cfg[i]]=[cfg[i],cfg[i+1]];renderEditor();benchRerender()}}});
+    li.append(cb,inp,el('span',{class:'cnt',text:(cmap.get(c.raw)||0)+'人'}),el('span',{class:'mv'},up,dn));
+    if(c.label!==c.raw)li.append(el('span',{class:'raw',text:'原始值：'+c.raw}));
+    ul.append(li);
+  });
+  ed.append(ul);
+  const all=el('input',{type:'checkbox'});all.checked=S.showAll;
+  all.addEventListener('change',()=>{S.showAll=all.checked;benchRerender()});
+  ed.append(el('label',{class:'chk'},all,'比較圖加入「整體」'));
+  ed.append(el('div',{class:'row'},
+    el('button',{class:'btn',type:'button',text:'依人數排序',onclick:()=>{cfg.sort((a,b)=>(cmap.get(b.raw)||0)-(cmap.get(a.raw)||0));renderEditor();benchRerender()}}),
+    el('button',{class:'btn',type:'button',text:'還原此欄位',onclick:()=>{delete S.benchCfg[S.benchField];renderEditor();benchRerender()}})));
+}
+function renderBench(){
+  destroy('bench');
+  if(!S.benchField){
+    $('#editor').innerHTML='';$('#editor').hidden=true;
+    $('#benchOut').innerHTML='';$('#benchOut').append(el('div',{class:'empty',text:S.person?'人員資料裡沒有可用的分群欄位（每欄需 1–60 類）。':'校標欄位來自人員資料，請先上傳人員資料。'}));
+    return;
+  }
+  $('#editor').hidden=false;renderEditor();renderBenchOut()}
+function renderBenchOut(){
+  const out=$('#benchOut');out.innerHTML='';
+  const f=S.benchField;const FL=f.slice(2).replace(/^\[自訂\]/,'');
+  const groups=groupsFor(f);
+  if(!groups.length){out.append(el('div',{class:'empty',text:'這個欄位目前沒有可用的分群，請在左側勾選至少一群。'}));return}
+  const whole=stats(S.rows,S.th);
+  const gs=groups.map((g,i)=>({...g,st:stats(g.rows,S.th),color:PAL[i%PAL.length]}));
+  const sets=(fn)=>{const s=gs.map(g=>({label:g.label,data:fn(g.st),color:g.color}));if(S.showAll)s.push({label:'整體',data:fn(whole),color:'#a9b4be'});return s};
+  out.append(el('h3',{class:'sec',text:`${FL}｜群組比較`}));
+  // summary table
+  const t=el('table');
+  t.append(el('thead',{},el('tr',{},...['群組','人數',...DIMS.map(d=>d.name)].map(h=>el('th',{text:h})))));
+  const tb=el('tbody');
+  for(const g of gs)tb.append(el('tr',{},el('td',{text:g.label}),el('td',{class:'num',text:g.st.n}),...g.st.dims.map(d=>el('td',{class:'num',text:isNaN(d.idx)?'–':d.idx}))));
+  tb.append(el('tr',{},el('td',{text:'整體'}),el('td',{class:'num',text:whole.n}),...whole.dims.map(d=>el('td',{class:'num',text:d.idx}))));
+  t.append(tb);out.append(el('div',{class:'tbl-wrap'},t));
+  const small=gs.filter(g=>g.st.n<5).map(g=>g.label);
+  if(small.length)out.append(el('p',{class:'warn',text:`人數少於 5 人：${small.join('、')}，平均數參考性低。`}));
+  const g1=el('div',{class:'grid wide'});g1.style.marginTop='16px';out.append(g1);
+  figure(g1,'bench',`${FL}｜四大管理總體指數比較`,`各群總體指數`,clusterCfg(DIMS.map(d=>d.name),sets(st=>st.dims.map(d=>d.idx))),1.6);
+  DIMS.forEach((d,di)=>{
+    figure(g1,'bench',`${FL}｜${d.name}各向度比較`,`百分等級平均數`,clusterCfg(d.items,sets(st=>st.dims[di].items.map(i=>i.avg))),1.6);
+  });
+  out.append(el('h3',{class:'sec',text:`${FL}｜各群明細`}));
+  for(const g of gs){
+    out.append(el('div',{class:'group-head'},el('h4',{text:g.label}),el('span',{text:`N＝${g.st.n}`})));
+    const sw=el('div',{class:'sw'});
+    for(const d of g.st.dims)sw.append(el('span',{},`${d.name}　優勢 `,el('b',{text:d.strong}),'　弱勢 ',el('b',{text:d.weak})));
+    out.append(sw);
+    const gg=el('div',{class:'grid'});out.append(gg);
+    figure(gg,'bench',`${g.label}｜四大管理總體指數`,`N＝${g.st.n}`,idxBarCfg(g.st.dims.map(d=>d.name),g.st.dims.map(d=>d.idx),g.color),1.4);
+    figure(gg,'bench',`${g.label}｜四大管理分數分布`,`N＝${g.st.n}`,distCfg(g.st.dims.map(d=>d.name),g.st.dims.map(d=>d.bands)),1.4);
+  }
+}
+
+/* ---------- tabs & downloads ---------- */
+document.querySelectorAll('nav.tabs [role=tab]').forEach(b=>b.addEventListener('click',()=>{
+  S.tab=b.dataset.tab;
+  document.querySelectorAll('nav.tabs [role=tab]').forEach(x=>x.setAttribute('aria-selected',x===b));
+  for(const t of ['bg','overall','bench'])$('#p-'+t).hidden=t!==S.tab;
+  render();
+}));
+$('#th').addEventListener('change',e=>{const v=num(e.target.value);S.th=isNaN(v)?60:v;render()});
+async function save(blob,filename){
+  const DL=await DLP;
+  if(DL){
+    try{await DL.save({filename,data:blob});toast('已下載 '+filename)}
+    catch(e){if(e&&e.code==='declined')return;if(e&&e.code==='rate_limited'){toast('上一個下載還在確認中，請稍候');return}toast('下載失敗：'+(e&&(e.message||e.code)||e))}
+  }else{
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  }
+}
+$('#zipBtn').addEventListener('click',async()=>{
+  const list=S.charts[S.tab];if(!list.length){toast('這一頁還沒有圖');return}
+  const btn=$('#zipBtn');btn.disabled=true;btn.textContent='打包中…';
+  try{
+    const zip=new JSZip();const used={};
+    for(const c of list){
+      const b=await new Promise(r=>c.ch.canvas.toBlob(r,'image/png'));
+      let n=c.fname;if(used[n]){used[n]++;n=n.replace(/\.png$/,`_${used[n]}.png`)}else used[n]=1;
+      zip.file(n,b);
+    }
+    const blob=await zip.generateAsync({type:'blob'});
+    const tabName={bg:'背景資訊',overall:'整體',bench:'校標_'+String(S.benchField||'').slice(2).replace(/^\[自訂\]/,'')}[S.tab];
+    await save(blob,safe(`MCES_${tabName}`)+'.zip');
+  }finally{btn.disabled=false;btn.textContent='下載本頁所有圖（ZIP）'}
+});
+(async()=>{try{await document.fonts.load('16px "Noto Sans TC"')}catch(e){}if(S.score)render()})();
+</script>
+</body>
+</html>

@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CEO AI 轉型大調查</title>
+<meta name="description" content="董事長／總經理對企業 AI 化轉型／升級需求大調查｜360d 才庫事業群">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#14505f; --brand-2:#2a6b7a; --brand-soft:#e3eef1; --ink:#1b1b1b; --text:#3a3a3a; --muted:#909090;
+  --line:#d2dae0; --rule:#3a3a3a; --bg:#ffffff; --err:#c0392b; --err-soft:#fdf1ef; --ok:#1e7d4f;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:#fff}
+body{margin:0;background:#fff;color:var(--text);font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;line-height:1.75;font-size:16px}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px}
+.progress{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line)}
+.progress .bar{height:3px;background:var(--brand-soft)}
+.progress .fill{height:100%;width:0;background:var(--brand);transition:width .25s}
+.progress .txt{font-size:13px;color:var(--muted);padding:5px 20px;max-width:860px;margin:0 auto;display:flex;justify-content:space-between}
+header.hero{padding:56px 0 8px;text-align:center}
+.hero .org{display:none}
+.hero h1{color:var(--brand);font-size:clamp(24px,4.6vw,34px);font-weight:700;line-height:1.4;margin:0}
+.block{margin:40px 0 0}
+.block h2,.doc-h2{color:var(--brand);font-size:20px;font-weight:700;margin:0 0 10px}
+.block p{margin:0;color:var(--text)}
+.dims{display:grid;gap:6px;margin:12px 0 0;padding:0;list-style:none}
+.dims li{position:relative;padding-left:22px;font-size:15px;color:var(--text)}
+.dims li::before{content:"";position:absolute;left:4px;top:.62em;width:8px;height:8px;border-radius:50%;background:var(--ink)}
+.dims b{color:var(--ink)}
+#octagon{display:block;width:100%;max-width:520px;margin:20px auto 12px}
+.toc{display:grid;gap:4px;margin-top:6px;max-width:640px}
+.toc a{display:grid;grid-template-columns:72px 1fr auto;gap:12px;text-decoration:none;color:var(--text);font-size:15px;padding:2px 0}
+.toc a .k{color:var(--muted)}
+.toc a em{font-style:normal;color:#6f8a93}
+.toc a:hover span{color:var(--brand)}
+.toc-note{font-size:13px;color:var(--muted);margin:12px 0 0}
+.sec-head{margin:64px 0 0;padding-bottom:10px;border-bottom:1px solid var(--rule);display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;scroll-margin-top:50px}
+.sec-head .k{font-size:15px;color:var(--muted)}
+.sec-head h2{color:var(--brand);font-size:clamp(20px,3.6vw,24px);font-weight:700;margin:0}
+.sec-note{color:var(--text);font-size:15px;margin:12px 0 0}
+.q{margin:32px 0 0;scroll-margin-top:56px;padding:4px 0;border-left:3px solid transparent;transition:background .2s}
+.q.invalid{border-left-color:var(--err);background:var(--err-soft);padding-left:12px;margin-left:-15px}
+.q .qhead{display:flex;gap:14px;align-items:baseline}
+.q .qno{color:var(--brand);font-size:18px;font-weight:500;flex:0 0 auto;min-width:38px}
+.q .qt{color:var(--ink);font-size:17px;font-weight:700}
+.q .tag{color:#6f8a93;font-style:italic;font-size:14px;font-weight:400;margin-left:6px;white-space:nowrap}
+.q .hint{font-size:13px;color:var(--muted);font-style:italic;margin:6px 0 0 52px}
+.q .err{display:none;color:var(--err);font-size:13px;margin:8px 0 0 52px}
+.q.invalid .err{display:block}
+.opts{display:grid;gap:2px;margin:10px 0 0 52px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:3px 8px;margin-left:-8px;border-radius:6px;cursor:pointer;color:var(--text);font-size:15px}
+.opt:hover{background:#f6f9fa}
+.opt input{margin:6px 0 0;accent-color:var(--brand);flex:0 0 auto;width:15px;height:15px}
+.opt.on{color:var(--ink);background:var(--brand-soft)}
+.opt.dis{opacity:.4;cursor:not-allowed}
+.other{margin:2px 0 6px 25px;display:none;max-width:420px}
+.other.show{display:block}
+input[type=text],input[type=email]{width:100%;font:inherit;font-size:15px;color:var(--ink);background:#fff;border:0;border-bottom:1px solid var(--rule);border-radius:0;padding:6px 2px}
+input[type=text]:focus,input[type=email]:focus{outline:0;border-bottom:2px solid var(--brand)}
+.tbl{margin:12px 0 0 52px;overflow-x:auto}
+table.grid{width:100%;border-collapse:collapse;font-size:15px}
+table.grid th{background:var(--brand-soft);color:var(--brand);font-weight:500;padding:8px 6px;border:1px solid var(--line);text-align:center}
+table.grid td{border:1px solid var(--line);padding:8px 6px;text-align:center}
+table.grid td.rl{text-align:left;color:var(--text);padding-left:10px}
+table.grid input{accent-color:var(--brand);width:16px;height:16px;cursor:pointer;margin:0}
+table.grid td.c{cursor:pointer}
+table.grid tr.invalid td.rl{color:var(--err)}
+table.grid .cl{display:none}
+.legend{font-size:13px;color:var(--muted);font-style:italic;margin:6px 0 0 72px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px;margin:14px 0 0 52px}
+.fields label{font-size:14px;color:var(--muted);display:block}
+.field.invalid input{border-bottom-color:var(--err)}
+.submit-bar{text-align:center;margin:56px 0 16px;padding-top:28px;border-top:1px dashed var(--line)}
+button.go{font:inherit;font-weight:700;font-size:17px;background:var(--brand);color:#fff;border:0;border-radius:8px;padding:12px 56px;cursor:pointer}
+button.go:hover{background:#0f4250}
+button.go:disabled{opacity:.6;cursor:wait}
+.privacy{font-size:13px;color:var(--muted);margin:0 auto 16px;max-width:640px}
+footer{text-align:center;color:var(--text);font-size:14px;padding:12px 0 56px}
+.done{display:none;text-align:center;padding:96px 20px 24px}
+.done .ic{width:60px;height:60px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.done h2{color:var(--brand);margin:0 0 8px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;font-size:14px;display:none;z-index:30;max-width:calc(100% - 32px)}
+@media (max-width:640px){
+  .opts,.tbl,.fields,.q .hint,.q .err{margin-left:0}
+  .legend{margin-left:0}
+  .fields{grid-template-columns:1fr}
+  .q .qhead{gap:8px}.q .qno{min-width:0}
+  .q.invalid{margin-left:-12px;padding-left:9px}
+  .toc a{grid-template-columns:64px 1fr auto;font-size:14px}
+  /* 表格在手機改成直列卡片 */
+  table.grid thead{display:none}
+  table.grid,table.grid tbody,table.grid tr,table.grid td{display:block;width:100%}
+  table.grid tr{border:1px solid var(--line);border-radius:6px;margin-bottom:10px;padding:8px 10px}
+  table.grid td{border:0;padding:0;text-align:left}
+  table.grid td.rl{padding:0 0 6px;font-weight:500;color:var(--ink)}
+  table.grid td.c{display:inline-block;width:auto;margin:0 6px 6px 0}
+  table.grid td.c label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:14px}
+  table.grid .cl{display:inline}
+  table.grid td.c:has(input:checked) label{background:var(--brand-soft);border-color:var(--brand);color:var(--brand)}
+}
+</style>
+</head>
+<body>
+
+<div class="progress" aria-hidden="true">
+  <div class="bar"><div class="fill" id="pfill"></div></div>
+  <div class="txt"><span>填答進度</span><span id="ptxt">0 / 0</span></div>
+</div>
+
+<main class="wrap" id="main">
+  <header class="hero">
+    <h1>董事長／總經理對企業 AI 化轉型／升級需求大調查</h1>
+  </header>
+
+  <section class="block">
+    <h2>填答說明</h2>
+    <p>本問卷在探討【企業 AI 化】營運架構落實到以下八大面向時，誰最適合統其成-負其責？並聚焦於經營者對人資長在 AI 時代的期待。八大面向定義如下：</p>
+    <svg id="octagon" viewBox="0 0 520 440" role="img" aria-label="AI 轉型統籌責任主管與八大面向"></svg>
+    <ul class="dims" id="dims"></ul>
+  </section>
+
+  <section class="block">
+    <h2>問卷結構</h2>
+    <div class="toc" id="toc"></div>
+    <p class="toc-note">約需 10–12 分鐘。作答會自動暫存在此瀏覽器，中途離開可回來繼續。</p>
+  </section>
+
+  <form id="form" novalidate></form>
+
+  <div class="submit-bar">
+    <p class="privacy">整體調查結果與洞察將於日後相關論壇發佈，並將統計分析結果 Email 給您（個人資料僅供本調查後續聯繫使用）。</p>
+    <button type="button" class="go" id="submitBtn">送出問卷</button>
+  </div>
+</main>
+
+<section class="wrap done" id="done">
+  <div>
+    <div class="ic"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+    <h2 style="text-align:center">問卷到此結束，感謝您的填答！</h2>
+    <p style="color:var(--muted);margin:0">整體調查結果與洞察將於日後相關論壇發佈，統計分析結果將 Email 給您。</p>
+  </div>
+</section>
+
+<footer>主辦單位；360d 才庫事業群／才庫人力資源顧問股份有限公司 敬上</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== 部署後把 Apps Script 網頁應用程式網址貼在這裡 ===== */
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxPrldVBNvg9etTwdBk6lAPCEdssujCwLJh4Z5o-F6mJ5Ds4zfpXMbgH3FYtZ_1kq8l/exec';
+const DRAFT_KEY = 'ceo-ai-survey-draft-v1';
+
+const DIMS = [
+  ['企業戰略','企業 AI 化的願景、策略、目標與路線圖如何嵌入公司發展藍圖中，並與預算、KPI 連動'],
+  ['商業模式','企業 AI 化在改變公司價值主張、收入模式、成本結構與產業價值鏈角色中的作用機制'],
+  ['營運流程','研發、採購、生產、行銷、銷售、服務、財務、人資、資訊等作業流程的 AI 化運作模式'],
+  ['組織架構','企業 AI 化於組織內的設置方式、集中或分散、決策層級與各單位間的職權/職責劃分原則'],
+  ['職務設計','職務內容、職責擔負、所需能力、人機分工、角色/任務等，因 AI 化進行的重新定義與設計'],
+  ['人才價值鏈','徵才、募才、選才、育才、用才、輔才、評才、留才、酬才、展才各環節於 AI 化下的調整'],
+  ['管理機制','針對營運流程中的數據治理、績效管理、預算編列、風險控管與決策機制的配套設計'],
+  ['AI 科技／數據底座','AI 治理、數據平台、雲端/算力、模型運用策略與資安防護等之系統性運作架構']
+];
+const DIM_ROWS = [['a','企業戰略'],['b','商業模式'],['c','營運流程'],['d','組織架構'],['e','職務設計'],['f','人才價值鏈'],['g','管理機制'],['h','AI 科技／數據底座']];
+const HR_ROLES = ['組織與職務再設計的架構師','全員 AI 能力的養成者','AI 人才供應鏈的建構者（招募、留任、內部轉調）','人機協作與工作方式變革的推動者','AI 倫理、勞動法遵與員工信任的守門人','以人力數據支持經營決策的分析者','AI 時代企業文化與員工體驗的塑造者'];
+const HR_CAPS = ['企業戰略與商業模式的理解','AI 與數據技術素養（能判斷應用可行性與風險）','組織設計與變革管理','工作分析與職務再設計','人力數據分析與量化決策','學習體系與能力發展設計','AI 倫理、勞動法遵與風險管理','跨部門協作與對經營團隊的影響力','員工體驗與內部溝通','外部人才市場與生態系連結'];
+const L = 'abcdefghij';
+const lettered = arr => arr.map((t,i)=>[L[i],t]);
+const OTHER = '其他（請說明）';
+
+const SECTIONS = [
+ {k:'第一部分', t:'企業 AI 化轉型的整體判斷', range:'Q1–Q4', note:'請以 貴公司整體立場作答。', qs:[
+  {id:'q1', t:'請評估 AI 化轉型對 貴公司的重要性與急迫性', tag:'每列單選', type:'scale', n:5, lo:'1＝非常低', hi:'5＝非常高',
+   rows:[['a','對未來三年競爭力的重要性'],['b','現階段推動的急迫性']]},
+  {id:'q2', t:'貴公司目前的 AI 導入階段', tag:'單選', type:'single',
+   opts:['尚未開始','評估規劃中','試點驗證（POC）中','局部業務單位已正式上線','跨部門規模化應用中','AI 已成為公司的核心競爭力']},
+  {id:'q3', t:'目前推動 AI 化轉型的最大障礙', tag:'複選，最多 4 項', type:'multi', max:4,
+   opts:['缺乏明確的 AI 戰略與目標','缺乏統籌負責的主管','缺乏 AI 與數據專業人才','多數員工的 AI 能力不足','數據品質不佳或分散在各系統','組織文化與員工抗拒','投資效益（ROI）不明確','資安、個資與法遵疑慮','預算不足',OTHER]},
+  {id:'q4', t:'您期待 AI 在未來三年內為 貴公司帶來的最關鍵改變', tag:'單選', type:'single',
+   opts:['降低成本','提升效能','開創新營收來源或新事業','提升客戶體驗','提升決策速度與品質','組織與人才結構的轉型','強化競爭力','其他']}
+ ]},
+ {k:'第二部分', t:'誰來統籌八大面向', range:'Q5–Q8', note:'本部分探討誰最適合「統其成－負其責」，以及人資長在其中的位置。', qs:[
+  {id:'q5', t:'目前 貴公司的 AI 化轉型主要由誰統籌', tag:'單選', type:'single',
+   opts:['董事長或總經理親自統籌','資訊長或資訊部門','專責的 AI／數位轉型主管或辦公室','策略規劃部門或總經理室','人資長或人資部門','各事業單位自行推動','尚無明確的負責主管',OTHER]},
+  {id:'q6', t:'您認為最適合統籌八大面向、並對整體成果負最終責任的主管是', tag:'單選', type:'single', hint:'八大面向的定義請見填答說明。',
+   opts:['總經理親自統籌','總經理直屬的專職 AI 轉型長／數位轉型長（CAIO／CDO）','資訊長／科技長（CIO／CTO）','策略長／企劃長（CSO）','營運長（COO）','人資長（CHRO）','財務長（CFO）','各事業群總經理分別負責，由總部協調',OTHER]},
+  {id:'q7', t:'您認為八大面向分別應由誰「主責」', tag:'每列單選', type:'matrix',
+   hint:'AI 轉型長＝總經理直屬的 AI／數位轉型專責主管或轉型辦公室；其他主管＝財務長、事業群主管等。',
+   cols:['總經理','AI 轉型長','資訊長/科技長','策略長','營運長','人資長','其他主管'], rows:DIM_ROWS},
+  {id:'q8', t:'是否應設立由總經理主持的「AI 轉型指導委員會」，並讓人資長參與', tag:'單選', type:'single',
+   opts:['應設立，且人資長為核心成員','應設立，人資長視議題列席即可','應設立，但不需人資長參與','不需設立','尚未考慮']}
+ ]},
+ {k:'第三部分', t:'AI 時代人資長的角色扮演', range:'Q9–Q12', note:'以下「人資長」泛指 貴公司人力資源的最高主管。', qs:[
+  {id:'q9', t:'您預期未來三年，貴公司人資長的角色會如何改變', tag:'單選', type:'single',
+   opts:['從行政與服務支援者，轉為經營層的策略夥伴','成為 AI 轉型的共同領導者，與 AI 轉型長或資訊長並列','工作重組、能力打造與人力調整','應側重於組織能力、組織文化與組織變革之打造','人資功能將大量被 AI 取代而縮編',OTHER]},
+  {id:'q10', t:'若只能選一項，您最期待人資長在 AI 轉型中優先扛起的角色是', tag:'單選', type:'single', opts:HR_ROLES},
+  {id:'q11', t:'角色扮演：您認為 AI 時代的人資長扮演下列角色的重要性', tag:'每列單選', type:'scale', n:5,
+   lo:'1＝非常不重要', hi:'5＝非常重要', rows:lettered(HR_ROLES)},
+  {id:'q12', t:'人資長是否應對「AI 轉型的組織與人才成果」承擔績效責任', tag:'單選', type:'single',
+   opts:['應納入其年度 KPI，且占顯著比重','應納入其年度 KPI，但比重有限','僅需支援配合，不必承擔 KPI','尚未考慮']}
+ ]},
+ {k:'第四部分', t:'人資長的職責範疇', range:'Q13–Q15', qs:[
+  {id:'q13', t:'職責範疇：下列事項應如何納入人資長的職責', tag:'每列單選', type:'matrix',
+   hint:'主責＝負最終成敗責任；共同負責＝與 AI 轉型長、資訊長或業務主管共同承擔；僅諮詢＝提供意見但不負責推動。',
+   cols:['主責','共同負責','僅諮詢','不應納入'],
+   rows:lettered(['AI 對各職務的影響評估與工作再設計','新興 AI 相關職務的設置與職能模型','全員分層的 AI 素養培訓體系','AI 人才的招募與留任策略','AI 導致的人力結構調整與員工轉型路徑','將 AI 應用成效納入績效與獎酬制度','AI 相關的組織架構調整（如 AI 卓越中心）','員工使用 AI 的規範與 AI 倫理中「人」的面向','高階主管與董事會的 AI 素養','人力數據與人力分析（People Analytics）平台'])},
+  {id:'q14', t:'貴公司人資部門目前實際承擔上一題事項的程度', tag:'單選', type:'single',
+   opts:['幾乎未參與','被動配合資訊或業務部門','部分事項主導','多數事項主導','全面主導並對成果負責']},
+  {id:'q15', t:'未來 12 個月，您最希望人資長交付的成果', tag:'複選，最多 4 項', type:'multi', max:4,
+   opts:['公司所需能力內涵與關鍵職務職能定義提報','全員 AI 培訓計畫上路','AI 對職務影響的盤點報告','關鍵 AI 人才招募到位','納入 AI 成效的績效與獎酬制度','組織架構調整與職務內容設計方案','員工 AI 使用規範','人力數據儀表板','高階主管 AI 決策培訓',OTHER]}
+ ]},
+ {k:'第五部分', t:'人資長的能力內涵', range:'Q16–Q19', qs:[
+  {id:'q16', t:'能力內涵：您認為 AI 時代的人資長應具備下列能力的重要性', tag:'每列單選', type:'scale', n:5,
+   lo:'1＝非常不重要', hi:'5＝非常重要', rows:lettered(HR_CAPS)},
+  {id:'q17', t:'相較於上述要求，貴公司人資長目前最大的能力落差在', tag:'複選，最多 4 項', type:'multi', max:4,
+   opts:[...HR_CAPS,'沒有明顯落差'], exclusive:'沒有明顯落差'},
+  {id:'q18', t:'整體而言，您給 貴公司人資長「面對 AI 時代的準備度」打幾分', tag:'評分題', type:'scale', n:10,
+   lo:'1＝完全未準備', hi:'10＝已充分準備'},
+  {id:'q19', t:'若現任人資長難以在短期內具備上述能力，您傾向', tag:'單選', type:'single',
+   opts:['投資培訓現任人資長','增設具 AI 背景的數位人資主管輔佐','從外部延攬具 AI 背景的人資長','將相關職責移交 AI 轉型長或其他主管','委託外部專業機構執行「再造計畫」','尚未考慮']}
+ ]},
+ {k:'第六部分', t:'八大面向的準備度與優先序', range:'Q20–Q22', qs:[
+  {id:'q20', t:'請評估 貴公司在八大面向的現況準備度', tag:'每列單選', type:'scale', n:5,
+   hint:'1＝尚未起步，2＝初步嘗試，3＝局部建置，4＝系統化運作，5＝持續優化並形成競爭優勢。', rows:DIM_ROWS},
+  {id:'q21', t:'未來一年，貴公司在八大面向中打算最優先投入的面向', tag:'複選，最多 3 項', type:'multi', max:3,
+   opts:DIM_ROWS.map(r=>r[1])},
+  {id:'q22', t:'關聯性：請表達您對下列敘述的同意程度', tag:'每列單選', type:'scale', n:5,
+   hint:'1＝非常不同意，2＝不同意，3＝中立，4＝同意，5＝非常同意。',
+   rows:lettered(['若企業戰略未釐清 AI 的定位，其餘面向都難以有效推動','若商業模式與營運流程未重新規劃，AI 化的投資成效不易顯現','人才價值鏈（徵、募、選、育、用、輔、評、留、酬、展）打造是 AI 化轉型可否效能化的關鍵','八大面向必須由同一位主管統籌，分頭推動會造成斷點'])}
+ ]},
+ {k:'第七部分', t:'基本資料', range:'Q23–Q26', note:'以下資料僅用於分群統計。', qs:[
+  {id:'q23', t:'您目前的職位', tag:'單選', type:'single',
+   opts:['董事長','總經理（執行長）','董事長兼總經理','集團或事業群總經理','其他高階經營主管（請說明）']},
+  {id:'q24', t:'貴公司所屬產業', tag:'單選', type:'single',
+   opts:['科技業（電子、資通訊、半導體）','製造業（金屬、機械、化工、紡織等）','金融保險','批發零售與流通','資訊軟體與科技服務','醫療與生技','營建與不動產','運輸與物流','餐旅與生活服務',OTHER]},
+  {id:'q25', t:'貴公司員工人數', tag:'單選', type:'single',
+   opts:['未滿 50 人','50 至 199 人','200 至 999 人','1,000 至 4,999 人','5,000 人以上']},
+  {id:'q26', t:'貴公司人資最高主管的層級', tag:'單選', type:'single',
+   opts:['人資最高主管是總經理或副總經理（人資主管由他帶領）','設有人資長（一級主管），直接向總經理報告','人資主管為二級主管，隸屬行政或管理部門','由其他主管兼管人資','無專職人資主管']},
+  {id:'contact', t:'聯絡資料', tag:'必填', type:'fields',
+   fields:[['name','姓名','text'],['title','職稱','text'],['company','公司名稱','text'],['email','個人 Email','email']]}
+ ]}
+];
+
+const needsOther = o => /請說明/.test(o);
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- 八角圖與面向定義 ---------- */
+(function(){
+  const svg = $('#octagon'), cx=260, cy=225, R=150, NS='http://www.w3.org/2000/svg';
+  const css = getComputedStyle(document.documentElement);
+  const pts = DIMS.map((_,i)=>{const a=(-90+45*i)*Math.PI/180;return [cx+R*Math.cos(a), cy+R*Math.sin(a), a];});
+  let h = `<polygon points="${pts.map(p=>p[0]+','+p[1]).join(' ')}" fill="none" stroke="var(--line)" stroke-width="3"/>`;
+  pts.forEach(p=>{ h += `<line x1="${cx}" y1="${cy}" x2="${p[0]}" y2="${p[1]}" stroke="var(--line)" stroke-width="2"/>`; });
+  h += `<circle cx="${cx}" cy="${cy}" r="72" fill="var(--brand-soft)" stroke="var(--brand)" stroke-width="3"/>
+        <text x="${cx}" y="${cy-10}" text-anchor="middle" font-size="15" fill="var(--muted)">AI轉型</text>
+        <text x="${cx}" y="${cy+20}" text-anchor="middle" font-size="21" font-weight="700" fill="var(--brand)">統籌責任主管</text>`;
+  pts.forEach((p,i)=>{
+    h += `<circle cx="${p[0]}" cy="${p[1]}" r="16" fill="var(--brand)"/>
+          <text x="${p[0]}" y="${p[1]+5}" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">${i+1}</text>`;
+    const c=Math.cos(p[2]), s=Math.sin(p[2]);
+    const lx=p[0]+c*30, ly=p[1]+s*30+5;
+    const anchor = Math.abs(c)<.2 ? 'middle' : (c>0?'start':'end');
+    const dy = Math.abs(c)<.2 ? (s<0?-6:12) : 0;
+    h += `<text x="${lx}" y="${ly+dy}" text-anchor="${anchor}" font-size="16" fill="var(--ink)">${DIMS[i][0]}</text>`;
+  });
+  svg.innerHTML = h;
+  $('#dims').innerHTML = DIMS.map(d=>`<li><b>${d[0]}：</b>${d[1]}</li>`).join('');
+  $('#toc').innerHTML = SECTIONS.map((s,i)=>`<a href="#sec${i}"><span class="k">${s.k}</span><span>${s.t}</span><em>${s.range}</em></a>`).join('');
+})();
+
+/* ---------- 產生表單 ---------- */
+const REQUIRED = [];   // [key, qid, rowEl?]
+let qNo = 0;
+function renderQ(q){
+  let body = '';
+  const no = q.type==='fields' ? '<span class="qno"></span>' : `<span class="qno">Q${++qNo}</span>`;
+  if(q.type==='single' || q.type==='multi'){
+    const t = q.type==='single' ? 'radio' : 'checkbox';
+    body = `<div class="opts">` + q.opts.map((o,i)=>`
+      <label class="opt"><input type="${t}" name="${q.id}" value="${esc(o)}"><span>${esc(o)}</span></label>
+      ${needsOther(o)?`<div class="other" data-for="${q.id}"><input type="text" name="${q.id}_other" placeholder="請說明" maxlength="200"></div>`:''}`).join('') + `</div>`;
+    REQUIRED.push([q.id, q.id]);
+  } else if(q.type==='scale' || q.type==='matrix'){
+    const cols = q.type==='scale' ? Array.from({length:q.n},(_,i)=>String(i+1)) : q.cols;
+    const rows = q.rows || [[null,null]];
+    body = `<div class="tbl"><table class="grid"><thead><tr>${q.rows?'<th>項目</th>':''}${cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>` + rows.map(([k,label])=>{
+      const key = k ? q.id+k : q.id;
+      REQUIRED.push([key, q.id]);
+      return `<tr class="row" data-key="${key}">${label?`<td class="rl">${k}. ${esc(label)}</td>`:''}${cols.map(c=>`<td class="c"><label><input type="radio" name="${key}" value="${esc(c)}" aria-label="${esc((label||'')+' '+c)}"><span class="cl">${esc(c)}</span></label></td>`).join('')}</tr>`;
+    }).join('') + `</tbody></table></div>` + (q.lo ? `<div class="legend">${q.lo}，${q.hi}。</div>` : '');
+  } else if(q.type==='fields'){
+    body = `<div class="fields">` + q.fields.map(([k,l,t])=>{
+      REQUIRED.push([k, q.id]);
+      return `<div class="field ${t==='email'?'':''}" data-key="${k}"><label for="f_${k}">${l}</label><input id="f_${k}" type="${t}" name="${k}" maxlength="120" autocomplete="${({name:'name',title:'organization-title',company:'organization',email:'email'})[k]}"></div>`;
+    }).join('') + `</div>`;
+  }
+  return `<div class="q" id="${q.id}">
+    <div class="qhead">${no}<span class="qt">${esc(q.t)}<span class="tag">[${q.tag}]</span></span></div>
+    ${q.hint?`<p class="hint">${esc(q.hint)}</p>`:''}
+    ${body}
+    <div class="err">此題尚未完成作答</div>
+  </div>`;
+}
+$('#form').innerHTML = SECTIONS.map((s,i)=>`
+  <div class="sec-head" id="sec${i}"><span class="k">${s.k}</span><h2>${s.t}</h2></div>${s.note?`<p class="sec-note">${s.note}</p>`:''}
+  ${s.qs.map(renderQ).join('')}`).join('');
+
+const QMAP = {}; SECTIONS.forEach(s=>s.qs.forEach(q=>QMAP[q.id]=q));
+const form = $('#form');
+
+/* ---------- 互動：選取樣式、上限、互斥、其他說明 ---------- */
+function refreshGroup(qid){
+  const q = QMAP[qid]; if(!q || !q.opts) return;
+  const boxes = [...form.querySelectorAll(`input[name="${qid}"]`)];
+  const checked = boxes.filter(b=>b.checked);
+  boxes.forEach(b=>{
+    const lab = b.closest('.opt');
+    lab.classList.toggle('on', b.checked);
+    const full = q.max && checked.length>=q.max && !b.checked;
+    b.disabled = !!full; lab.classList.toggle('dis', !!full);
+  });
+  form.querySelectorAll(`.other[data-for="${qid}"]`).forEach(o=>{
+    const opt = o.previousElementSibling.querySelector('input');
+    o.classList.toggle('show', opt.checked);
+  });
+}
+form.addEventListener('change', e=>{
+  const el = e.target, qid = el.name.replace(/_other$/,'');
+  const q = QMAP[qid];
+  if(q && q.exclusive && el.type==='checkbox' && el.checked){
+    form.querySelectorAll(`input[name="${qid}"]`).forEach(b=>{
+      if(b!==el && (el.value===q.exclusive || b.value===q.exclusive)) b.checked=false;
+    });
+  }
+  refreshGroup(qid);
+  clearInvalid(el);
+  updateProgress(); saveDraft();
+});
+form.addEventListener('input', e=>{ if(e.target.type==='text'||e.target.type==='email'){ clearInvalid(e.target); updateProgress(); saveDraft(); } });
+
+function clearInvalid(el){
+  const row = el.closest('.row, .field'); if(row) row.classList.remove('invalid');
+  const card = el.closest('.q'); if(card && !card.querySelector('.row.invalid, .field.invalid')) card.classList.remove('invalid');
+}
+
+/* ---------- 收集與驗證 ---------- */
+function valueOf(key){
+  const els = [...form.querySelectorAll(`[name="${key}"]`)];
+  if(!els.length) return '';
+  if(els[0].type==='radio') return (els.find(e=>e.checked)||{}).value || '';
+  if(els[0].type==='checkbox') return els.filter(e=>e.checked).map(e=>e.value);
+  return els[0].value.trim();
+}
+function isAnswered(key){
+  const v = valueOf(key);
+  if(Array.isArray(v)) return v.length>0;
+  if(key==='email') return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  return !!v;
+}
+function otherMissing(qid){
+  const q = QMAP[qid]; if(!q || !q.opts) return false;
+  const v = valueOf(qid); const arr = Array.isArray(v)?v:[v];
+  return arr.some(x=>needsOther(x)) && !valueOf(qid+'_other');
+}
+function updateProgress(){
+  const total = REQUIRED.length, done = REQUIRED.filter(([k])=>isAnswered(k)).length;
+  $('#pfill').style.width = (done/total*100)+'%';
+  $('#ptxt').textContent = `${done} / ${total}`;
+}
+function validate(){
+  let first = null;
+  form.querySelectorAll('.invalid').forEach(e=>e.classList.remove('invalid'));
+  REQUIRED.forEach(([k,qid])=>{
+    const bad = !isAnswered(k) || (k===qid && otherMissing(qid));
+    if(bad){
+      const card = document.getElementById(qid); card.classList.add('invalid');
+      const sub = form.querySelector(`[data-key="${k}"]`); if(sub) sub.classList.add('invalid');
+      if(!first) first = card;
+    }
+  });
+  return first;
+}
+function collect(){
+  const data = {};
+  REQUIRED.forEach(([k])=>{ const v=valueOf(k); data[k]=Array.isArray(v)?v.join('、'):v; });
+  Object.keys(QMAP).forEach(qid=>{ if(form.querySelector(`[name="${qid}_other"]`)) data[qid+'_other']=valueOf(qid+'_other'); });
+  data.userAgent = navigator.userAgent;
+  return data;
+}
+
+/* ---------- 暫存 ---------- */
+function saveDraft(){
+  try{
+    const d={}; form.querySelectorAll('input').forEach(i=>{
+      if((i.type==='radio'||i.type==='checkbox')){ if(i.checked) (d[i.name]=d[i.name]||[]).push(i.value); }
+      else if(i.value) d[i.name]=i.value;
+    });
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
+  }catch(e){}
+}
+function loadDraft(){
+  try{
+    const d = JSON.parse(localStorage.getItem(DRAFT_KEY)||'null'); if(!d) return;
+    form.querySelectorAll('input').forEach(i=>{
+      const v=d[i.name]; if(v==null) return;
+      if(i.type==='radio'||i.type==='checkbox') i.checked = v.includes(i.value); else i.value=v;
+    });
+  }catch(e){}
+}
+function clearDraft(){ try{ localStorage.removeItem(DRAFT_KEY); }catch(e){} }
+
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.style.display='block'; clearTimeout(toast._t); toast._t=setTimeout(()=>t.style.display='none',3500); }
+
+/* ---------- 送出 ---------- */
+$('#submitBtn').addEventListener('click', async ()=>{
+  const first = validate();
+  if(first){ first.scrollIntoView({behavior:'smooth',block:'start'}); toast('還有題目未完成，已標示紅框'); return; }
+  if(GAS_URL.startsWith('PASTE')){ toast('尚未設定 GAS_URL，請先部署 Apps Script'); return; }
+  const btn = $('#submitBtn'); btn.disabled=true; btn.textContent='送出中…';
+  try{
+    const res = await fetch(GAS_URL,{method:'POST',body:JSON.stringify(collect())}); // text/plain，避免 CORS 預檢
+    const j = await res.json();
+    if(!j.ok) throw new Error(j.error||'寫入失敗');
+    clearDraft();
+    $('#main').style.display='none'; document.querySelector('.progress').style.display='none';
+    $('#done').style.display='block'; window.scrollTo({top:0});
+  }catch(err){
+    toast('送出失敗，請稍後再試（'+err.message+'）');
+    btn.disabled=false; btn.textContent='送出問卷';
+  }
+});
+
+loadDraft();
+Object.keys(QMAP).forEach(refreshGroup);
+updateProgress();
+</script>
+</body>
+</html>

@@ -16,3 +16,5 @@ defaults:
 exclude:
   - .pages.yml
   - README.md
+  - ai-quick-screen/gas
+  - CEO-AI-Insights-Survey/gas

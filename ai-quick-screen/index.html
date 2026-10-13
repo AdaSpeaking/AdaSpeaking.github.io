@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>企業 AI 轉型核心問題快篩</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #2B1215;
+    --body: #4A3A3A;
+    --oxblood: #7A1F26;
+    --copper: #8C5A22;
+    --gold: #D9B07A;
+    --paper: #FAF6F0;
+    --sand: #F2EADF;
+    --line: #DDCFBD;
+    --card: #FFFDF9;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans TC', 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+    line-height: 1.6;
+  }
+  .brand { border-bottom: 1px solid var(--line); background: var(--paper); }
+  .brand-in { max-width: 880px; margin: 0 auto; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .brand img { height: 40px; width: auto; display: block; }
+  .brand span { font-size: 13px; font-weight: 700; letter-spacing: 2px; color: var(--copper); }
+  @media (max-width: 480px) { .brand img { height: 32px; } .brand span { display: none; } }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 48px 20px 80px; }
+  .eyebrow { font-size: 14px; font-weight: 700; letter-spacing: 3px; color: var(--copper); margin: 0 0 12px; }
+  h1, h2, h3 { margin: 0; line-height: 1.3; }
+  h1, h2 { font-family: 'Noto Serif TC', serif; font-weight: 700; }
+  h1 { font-size: clamp(30px, 5vw, 44px); }
+  h2 { font-size: clamp(24px, 4vw, 32px); }
+  p { margin: 0; }
+  ul { margin: 0; padding-left: 22px; }
+  .lead { font-size: 18px; color: var(--body); margin-top: 14px; }
+  .section { margin-top: 56px; }
+  .section > h2 { margin-bottom: 8px; }
+  .muted { color: var(--body); font-size: 15px; }
+
+  .btn {
+    display: inline-block; border: 0; cursor: pointer; font: inherit; font-weight: 700;
+    font-size: 17px; padding: 14px 28px; border-radius: 4px;
+    background: var(--oxblood); color: var(--paper);
+  }
+  .btn:hover { background: #63181E; }
+  .btn.ghost { background: transparent; color: var(--copper); border: 1px solid var(--copper); }
+  .btn.ghost:hover { background: var(--sand); }
+  button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+
+  /* intro */
+  .hero { background: var(--ink); color: var(--paper); padding: 48px 32px; border-radius: 6px; }
+  .hero .eyebrow { color: var(--gold); }
+  .hero .lead { color: #E8D9C8; }
+  .hero hr { border: 0; border-top: 3px solid var(--gold); width: 80px; margin: 24px 0; }
+  .hero .btn { margin-top: 32px; background: var(--gold); color: var(--ink); }
+  .hero .btn:hover { background: #E6C393; }
+  .dims { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 24px; }
+  .dims div { background: var(--sand); padding: 14px 16px; border-radius: 4px; font-weight: 700; font-size: 15px; }
+  .dims span { display: block; color: var(--copper); font-size: 13px; }
+
+  /* question */
+  .progress { display: flex; gap: 6px; margin-bottom: 32px; }
+  .progress i { flex: 1; height: 6px; border-radius: 3px; background: var(--line); }
+  .progress i.on { background: var(--oxblood); }
+  .facet { font-size: 15px; color: var(--body); margin-top: 8px; }
+  .ask { font-size: clamp(19px, 3vw, 23px); font-weight: 700; margin: 28px 0 20px; }
+  .opts { display: grid; gap: 12px; }
+  .opt {
+    display: flex; gap: 16px; align-items: flex-start; text-align: left; width: 100%;
+    font: inherit; font-size: 17px; color: var(--ink); cursor: pointer;
+    background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 18px 20px;
+  }
+  .opt:hover { border-color: var(--copper); background: var(--sand); }
+  .opt.sel { border-color: var(--oxblood); background: var(--sand); box-shadow: inset 4px 0 0 var(--oxblood); }
+  .opt b { font-family: 'Noto Serif TC', serif; color: var(--oxblood); font-size: 19px; min-width: 18px; }
+  .nav { margin-top: 28px; }
+
+  /* result: main problem */
+  .verdict { margin-top: 28px; background: var(--ink); color: var(--paper); padding: 32px 28px; border-radius: 6px; }
+  .verdict .eyebrow { color: var(--gold); }
+  .verdict h2 { font-size: clamp(28px, 5vw, 40px); }
+  .verdict .pain { color: #E8D9C8; margin-top: 10px; font-size: 17px; }
+  .verdict .combo { margin-top: 20px; padding: 16px 18px; background: rgba(250,246,240,.08); border-left: 4px solid var(--gold); font-size: 17px; }
+  .verdict .evidence { margin-top: 4px; color: var(--paper); font-size: 17px; }
+  .verdict .evidence li { margin: 4px 0; }
+  .verdict .pain { margin-top: 16px; }
+  .verdict .btn { margin-top: 24px; background: var(--gold); color: var(--ink); }
+  .verdict .btn:hover { background: #E6C393; }
+  .healthy { margin-top: 16px; padding: 14px 18px; border-radius: 4px; background: var(--sand); color: var(--ink); font-size: 16px; }
+
+  /* result: distribution */
+  .bars { margin-top: 20px; display: grid; gap: 14px; }
+  .bar-row { display: grid; grid-template-columns: minmax(150px, 210px) 1fr 64px; gap: 14px; align-items: center; }
+  .bar-row .name { font-weight: 700; font-size: 15px; }
+  .bar-track { height: 14px; background: var(--sand); border-radius: 7px; overflow: hidden; }
+  .bar-fill { height: 100%; background: #C9B39A; border-radius: 7px; }
+  .bar-row.main .bar-fill { background: var(--oxblood); }
+  .bar-row.link .bar-fill { background: var(--copper); }
+  .bar-row .val { font-size: 14px; color: var(--body); text-align: right; white-space: nowrap; }
+  @media (max-width: 560px) {
+    .bar-row { grid-template-columns: 1fr 56px; }
+    .bar-row .name { grid-column: 1 / -1; }
+  }
+
+  /* result: plan cards */
+  .plans { display: grid; gap: 14px; margin-top: 20px; }
+  .plan-card {
+    display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center;
+    width: 100%; text-align: left; font: inherit; color: var(--ink); cursor: pointer;
+    background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 18px 20px;
+  }
+  .plan-card:hover { border-color: var(--oxblood); background: var(--sand); }
+  .plan-card .letter { font-family: 'Noto Serif TC', serif; font-weight: 700; font-size: 22px; color: var(--paper); background: var(--copper); width: 48px; height: 48px; border-radius: 4px; display: grid; place-items: center; }
+  .plan-card.main .letter { background: var(--oxblood); }
+  .plan-card .t { font-weight: 700; font-size: 17px; }
+  .plan-card .s { font-size: 14px; color: var(--body); margin-top: 2px; }
+  .plan-card .go { color: var(--copper); font-weight: 700; font-size: 14px; white-space: nowrap; }
+  .plan-card.minor { padding: 12px 20px; }
+  .plan-card.minor .letter { width: 36px; height: 36px; font-size: 17px; background: #C9B39A; color: var(--ink); }
+  .pill { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 3px; margin-left: 8px; vertical-align: middle; background: var(--oxblood); color: var(--paper); }
+  .pill.soft { background: transparent; color: var(--oxblood); border: 1px solid var(--oxblood); }
+
+  /* result: per-question */
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 6px; margin-top: 16px; overflow: hidden; }
+  .card-hd { display: flex; gap: 12px; align-items: baseline; padding: 14px 20px; background: var(--sand); }
+  .card-hd .q { font-weight: 700; color: var(--copper); }
+  .card-hd h3 { font-size: 18px; }
+  .card-bd { padding: 18px 20px; display: grid; gap: 12px; }
+  .label { font-size: 13px; font-weight: 700; letter-spacing: 2px; color: var(--copper); margin-bottom: 4px; }
+  .reading { background: var(--sand); padding: 14px 16px; border-radius: 4px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { font-size: 14px; padding: 3px 10px; border-radius: 3px; border: 1px solid var(--line); background: var(--paper); }
+
+  .note { margin-top: 40px; padding: 16px 20px; border-left: 4px solid var(--copper); color: var(--body); font-size: 15px; }
+  .cta { margin-top: 32px; background: var(--ink); color: var(--paper); padding: 28px; border-radius: 6px; }
+  .cta .eyebrow { color: var(--gold); }
+  .cta p { color: #E8D9C8; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+  .form { display: grid; gap: 18px; margin-top: 28px; }
+  .field label { display: block; font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+  .field label .opt-tag { font-weight: 400; color: var(--body); font-size: 14px; margin-left: 2px; }
+  .field label i { color: var(--oxblood); font-style: normal; margin-left: 2px; }
+  .field input { width: 100%; font: inherit; font-size: 17px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 4px; background: var(--card); color: var(--ink); }
+  .field input:focus { outline: 3px solid var(--gold); outline-offset: 0; border-color: var(--copper); }
+  .field input[aria-invalid="true"] { border-color: var(--oxblood); }
+  .err { color: var(--oxblood); font-size: 14px; margin-top: 4px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 560px) { .two { grid-template-columns: 1fr; } }
+  .consent { background: var(--sand); border-radius: 4px; padding: 16px 18px; font-size: 14px; color: var(--body); }
+  .consent details summary { cursor: pointer; font-weight: 700; color: var(--copper); margin-top: 8px; }
+  .consent details p { margin-top: 8px; }
+  .consent .check { display: flex; gap: 10px; align-items: flex-start; font-size: 16px; color: var(--ink); }
+  .consent input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--oxblood); flex: none; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .row-btns { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+  .cta-contact { margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(250,246,240,.2); display: grid; gap: 8px; font-size: 17px; }
+  .cta-contact p { color: var(--paper); }
+  .cta-contact span { display: inline-block; min-width: 80px; color: var(--gold); font-size: 14px; font-weight: 700; letter-spacing: 1px; }
+  .cta-contact a { color: var(--paper); text-decoration: underline; text-underline-offset: 3px; word-break: break-all; }
+  [hidden] { display: none !important; }
+
+  /* plan dialog */
+  dialog { width: min(760px, calc(100vw - 32px)); max-height: calc(100vh - 48px); border: 0; border-radius: 8px; padding: 0; background: var(--paper); color: var(--ink); }
+  dialog::backdrop { background: rgba(43,18,21,.55); }
+  .dlg-hd { background: var(--oxblood); color: var(--paper); padding: 28px 28px 24px; position: relative; }
+  .dlg-hd .eyebrow { color: #F0D3A8; }
+  .dlg-hd h2 { font-size: clamp(22px, 4vw, 28px); padding-right: 40px; }
+  .dlg-hd p { color: #F2E3D3; margin-top: 10px; }
+  .dlg-x { position: absolute; top: 16px; right: 16px; width: 40px; height: 40px; border: 0; border-radius: 4px; background: rgba(250,246,240,.15); color: var(--paper); font-size: 22px; cursor: pointer; }
+  .dlg-bd { padding: 24px 28px 32px; display: grid; gap: 24px; }
+  .dlg-bd h3 { font-size: 17px; margin-bottom: 8px; color: var(--oxblood); }
+  .dlg-bd li { margin: 4px 0; }
+  .twin { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .twin > div { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 16px 18px; }
+  .twin .k { font-size: 13px; font-weight: 700; letter-spacing: 2px; color: var(--copper); }
+  .twin .t { font-weight: 700; margin: 4px 0 6px; }
+  .dims-list { display: grid; gap: 8px; margin-top: 10px; }
+  .dims-list div { font-size: 15px; }
+  .dims-list b { display: block; }
+  .path { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .path div { background: var(--sand); border-radius: 4px; padding: 12px 14px; font-size: 14px; }
+  .path b { display: block; color: var(--copper); font-size: 13px; }
+  .path strong { display: block; font-size: 15px; margin: 2px 0 4px; }
+  @media (max-width: 600px) { .twin, .path { grid-template-columns: 1fr; } }
+
+  @media print {
+    .actions, .progress, .plan-card .go { display: none !important; }
+    body { background: #fff; }
+    .card, .plan-card { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<header class="brand"><div class="brand-in"><img src="data:image/png;base64,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" alt="360d 才庫事業群"><span>企業 AI 轉型核心問題快篩</span></div></header>
+<main class="wrap" id="app"></main>
+
+<dialog id="dlg" aria-labelledby="dlg-title">
+  <div class="dlg-hd">
+    <button class="dlg-x" id="dlg-x" aria-label="關閉">×</button>
+    <p class="eyebrow" id="dlg-eyebrow"></p>
+    <h2 id="dlg-title"></h2>
+    <p id="dlg-pain"></p>
+  </div>
+  <div class="dlg-bd" id="dlg-bd"></div>
+</dialog>
+
+<script>
+/* =========================================================
+   設定區
+   ---------------------------------------------------------
+   題目、選項、核心問題類型、方案、合作形式、人才能力構面、
+   兩項既有優勢、三層診斷：皆沿用原版文字。
+   各選項的 reading（診斷判讀）：B 選項為原文，其餘為補寫。
+   各選項的 signals（對應核心問題類型與權重）：判讀邏輯，可自行調整。
+   CONTACT：結果頁下方聯絡資訊，留空則不顯示。
+   ========================================================= */
+const CONTACT = {
+  name: '翁小姐',
+  phone: '02-2100-2625',
+  ext: '7560',
+  email: 'sophiew@360d.com.tw'
+};
+
+/* Google Apps Script 網頁應用程式網址（/exec 結尾）。留空則不送出資料。 */
+const SHEET_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyJq0z7I2n7wX5hCRjQ-o77N1QBr_L5FhXl8e7VcX1BIVqBMEQmPVGvzl7kcY1qN7iEWg/exec';
+
+/* 五大核心問題類型 → 對應方案（原版表格） */
+const TYPES = {
+  1: { name: '① AI 戰略失焦',        pain: '不知道 AI 應優先創造什麼價值',     plan: 'A' },
+  2: { name: '② 營運流程失效',        pain: '導入工具卻沒有解決流程瓶頸',       plan: 'B' },
+  3: { name: '③ 組織治理失靈',        pain: '沒有人統籌，權責與決策不清',       plan: 'C' },
+  4: { name: '④ 關鍵人才不匹配',      pain: '人才能力、特質與轉型角色不匹配',   plan: 'D' },
+  5: { name: '⑤ 落地與價值驗證不足',  pain: '有工具、有試點，卻看不到可驗證成果', plan: 'E' }
+};
+
+/* 分數相同時的優先順序：戰略、治理優先（原版：「Q1 低、Q3 低：優先處理 AI 戰略與治理」） */
+const PRIORITY = [1, 3, 4, 2, 5];
+
+/* 第二層建議評估的五種人才能力（原版） */
+const TALENT = {
+  t1: { name: 'AI 認知與學習適應',   q: '能否理解 AI 的能力、限制與工作影響？' },
+  t2: { name: '變革動機與心理適應',   q: '面對不確定性，能否調整工作方式？' },
+  t3: { name: '問題定義與判斷能力',   q: '能否辨識真正問題、評估 AI 輸出並作出合理決策？' },
+  t4: { name: '跨部門協作與影響力',   q: '能否整合業務、技術及管理資源？' },
+  t5: { name: '執行力與價值導向',     q: '能否將 AI 應用轉化為可驗證的工作成果？' }
+};
+
+/* 兩項既有優勢（原版） */
+const STRENGTH = {
+  capability: { name: '企業人才盤點與專案顧問能力', desc: '將診斷結果連結到關鍵職務、關鍵人才、組織分工、人才發展及經營績效，而不只是提出資訊科技建議。' },
+  talent:     { name: '專業心理測評工具',           desc: '以特質與潛能評估為核心，找出關鍵職務與人才的適配度，作為人才配置與發展的依據。' }
+};
+
+/* 五項服務方案（原版）；talent = 第二層優先評估的人才能力構面 */
+const PLANS = {
+  A: { title: 'AI 戰略與商業模式重塑', type: 1, talent: ['t3', 't1'],
+       deliver: ['企業 AI 戰略定位與優先議題', 'AI 應用場景及商業價值機會清單', '專案優先順序、投資原則與預期效益', '12 個月 AI 轉型路線圖'],
+       form: '高階主管工作坊＋戰略顧問專案' },
+  B: { title: 'AI 營運流程再造與人機協作', type: 2, talent: ['t1', 't5'],
+       deliver: ['高成本、高工時、低價值流程盤點', '工作任務拆解及 AI 適用性分析', '人工、AI 助理、AI Agent 的工作分配設計', '試點流程、導入前基準值及成效驗收指標'],
+       form: '流程診斷＋單一場景試點規劃' },
+  C: { title: 'AI 組織治理與關鍵職務重設', type: 3, talent: ['t4', 't3'],
+       deliver: ['AI 轉型治理架構與決策權責表', '跨部門 AI 轉型委員會或專案辦公室設計', '關鍵職務與關鍵任務重新定義', 'AI 導入、風險控管及人工覆核責任設計'],
+       form: '組織診斷＋治理機制設計' },
+  D: { title: 'AI 時代關鍵人才盤點與職能升級', type: 4, talent: ['t1', 't2', 't3', 't4', 't5'],
+       deliver: ['關鍵職務所需職能與績效效標分析', '關鍵人才的能力、心理特質與發展潛能評估', '關鍵職務與人才的匹配度分析', '人才發展、職務調整、培訓與接班建議'],
+       form: '心理測評＋人才盤點＋人才發展顧問專案' },
+  E: { title: 'AI 價值創造與績效管理', type: 5, talent: ['t5', 't3'],
+       deliver: ['AI 專案投資效益及 KPI 設計', '導入前後的績效基準與效益驗證', '資料、隱私、安全及模型風險治理盤點', '試點成果檢討、擴大導入及持續改善機制'],
+       form: 'AI 專案管理顧問＋績效追蹤服務' }
+};
+
+/* 三層診斷架構（原版） */
+const LAYERS = [
+  { k: '第一層', name: '企業經營問題快篩', d: '五個問題・約 5～10 分鐘' },
+  { k: '第二層', name: '組織與關鍵人才深度診斷', d: '心理測評＋關鍵職務分析＋人才盤點' },
+  { k: '第三層', name: 'AI 轉型與人才價值創造顧問專案', d: '戰略、流程、組織、人才與績效的整合改善' }
+];
+
+/* 題目與選項（原版文字）
+   signals: [[核心問題類型編號, 權重], ...]，權重 1～3，越高代表該選項越指向此問題 */
+const QUESTIONS = [
+  {
+    id: 'Q1', dim: '戰略與商業模式', title: 'AI 究竟要為企業創造什麼價值？',
+    facet: '企業戰略、商業模式、價值創造',
+    ask: '您認為未來 1～3 年，AI 最應該為企業解決哪一項經營問題？',
+    options: [
+      { key: 'A', text: '降低人力成本、縮短作業時間、提高工作效率', signals: [[2, 1]],
+        reading: '以效率提升為主。應先盤點高工時、高重複性的作業，建立導入前的工時與成本基準值，避免 AI 只停留在個人工具層次。' },
+      { key: 'B', text: '改善產品服務、顧客體驗、營收或獲利', signals: [[1, 1]],
+        reading: '以經營成果為主。應盤點客戶旅程、營收來源、服務品質及可量化的價值指標。' },
+      { key: 'C', text: '開發新產品、新服務、新市場或新商業模式', signals: [[1, 1]],
+        reading: '以成長與創新為主。應先驗證目標客群、市場需求與商業模式的可行性，再決定 AI 投入的優先順序與資源配置。' },
+      { key: 'D', text: '尚未確定，主要是因為競爭者都在導入 AI', signals: [[1, 3]],
+        reading: '戰略定位不明：AI 投入容易流於跟風。應先釐清企業的經營目標與優先議題，再決定是否導入、從哪裡開始。' }
+    ]
+  },
+  {
+    id: 'Q2', dim: '營運流程', title: '企業真正需要改造的是哪裡？',
+    facet: '流程效率、跨部門協作、人機分工',
+    ask: '目前哪一種情況最嚴重地限制企業的營運效率或服務品質？',
+    options: [
+      { key: 'A', text: '大量重複工作、人工處理、資料重複輸入', signals: [[2, 2]],
+        reading: '作業自動化機會明確：應盤點重複性高、規則明確的作業，評估 AI 與自動化的適用性，並建立導入前的工時基準值。' },
+      { key: 'B', text: '跨部門流程冗長、資訊斷點多、權責不清', signals: [[2, 2], [3, 1]],
+        reading: '流程再造與組織協同問題：應先釐清端到端流程、決策權與跨部門責任。' },
+      { key: 'C', text: '依賴個人經驗，決策、判斷與服務品質不穩定', signals: [[4, 2], [2, 1]],
+        reading: '知識與判斷標準化問題：應萃取關鍵人員的經驗與判斷標準，建立可複製的作業規範，再評估 AI 輔助決策的可行性。' },
+      { key: 'D', text: '流程尚未明確，連問題在哪裡都難以量化', signals: [[2, 3]],
+        reading: '流程基礎薄弱：應先完成端到端流程盤點，定義關鍵環節與衡量指標，否則難以判斷 AI 應從何處切入。' }
+    ]
+  },
+  {
+    id: 'Q3', dim: '組織與關鍵職務', title: '誰應該對 AI 轉型成果負責？',
+    facet: '組織架構、職務設計、決策權責',
+    ask: '目前企業是否已經明確指定 AI 轉型的負責人，並賦予其跨部門推動權限與成果責任？',
+    options: [
+      { key: 'A', text: '有高階主管統籌，也有明確的經營成果指標與決策權', signals: [],
+        reading: '轉型治理已有基礎。應持續檢視決策權責與成果指標的執行狀況，並評估擴大跨部門推動的範圍。' },
+      { key: 'B', text: '由 IT、數位或資訊部門負責，主要以技術導入為主', signals: [[3, 2]],
+        reading: '可能存在「技術有人負責、經營成果無人負責」的落差。應建立業務與技術共同治理機制。' },
+      { key: 'C', text: '各部門自行試用與推動，缺乏整體統籌', signals: [[3, 2], [1, 1]],
+        reading: '缺乏整體統籌：可能出現重複投資、標準不一、成果無法整合。應建立跨部門轉型委員會或專案辦公室，統一優先順序與資源配置。' },
+      { key: 'D', text: '尚未指定明確負責人，或只有口頭要求', signals: [[3, 3]],
+        reading: '轉型責任懸空：沒有人對成果負責，AI 投入難以持續。應優先指定高階負責人，並明確其決策權限與成果指標。' }
+    ]
+  },
+  {
+    id: 'Q4', dim: '人才與變革', title: '現有關鍵人才具備轉型能力嗎？',
+    facet: '人才特質、能力、潛能、變革適應力',
+    ask: '面對 AI 導入及工作方式改變，企業最擔心哪一種人才問題？',
+    options: [
+      { key: 'A', text: '缺乏 AI、資料分析或數位應用的專業技能', signals: [[4, 2]],
+        reading: '數位職能缺口：應先界定關鍵職務所需的 AI 與數位職能，再依落差規劃培訓與職能升級路徑。' },
+      { key: 'B', text: '主管缺乏轉型思維、變革領導或跨部門整合能力', signals: [[4, 2], [3, 1]],
+        reading: '管理與領導缺口：針對轉型領導、問題定義、決策品質與跨部門協作進行評估及發展。' },
+      { key: 'C', text: '員工抗拒改變、擔心被取代，或不願重新設計工作', signals: [[4, 2], [3, 1]],
+        reading: '變革適應問題：應了解員工抗拒的真正原因，透過工作重新設計、參與機制與變革溝通，降低對被取代的疑慮。' },
+      { key: 'D', text: '不清楚誰適合擔任 AI 轉型的關鍵職務與核心角色', signals: [[4, 3]],
+        reading: '關鍵角色與人才匹配不明：應先定義 AI 轉型的關鍵職務，再以特質與潛能評估找出職務與人才的適配度，作為核心角色配置的依據。' }
+    ]
+  },
+  {
+    id: 'Q5', dim: '執行與價值驗證', title: '如何證明 AI 真的帶來成果？',
+    facet: '執行能力、資料與風險治理、績效衡量',
+    ask: '企業目前是否能持續衡量 AI 導入後，對經營績效與人才價值所產生的實際影響？',
+    options: [
+      { key: 'A', text: '已有導入前後的量化指標、效益驗證及持續改善機制', signals: [],
+        reading: '已具備成果驗證機制。可進一步評估跨部門規模化、AI Agent 應用及新商業模式創新。' },
+      { key: 'B', text: '有試點或工具使用，但成果主要依使用量或使用者感受判斷', signals: [[5, 3]],
+        reading: '存在成果衡量落差。應補上基準值、KPI、成本效益、品質與風險指標。' },
+      { key: 'C', text: '有構想或採購計畫，但資料、系統整合或風險控管仍未到位', signals: [[5, 3]],
+        reading: '執行條件未到位：應先盤點資料品質、系統整合與風險控管的缺口，再決定試點範圍與投入順序。' },
+      { key: 'D', text: '尚未形成可執行的 AI 專案與資源配置計畫', signals: [[1, 2], [5, 1]],
+        reading: '尚未形成執行計畫：應先確立 AI 轉型的優先議題、專案範圍與資源配置，形成可執行的路線圖。' }
+    ]
+  }
+];
+
+/* 主問題＋連動問題的組合判讀（原版文字）；未列出的組合使用通用說明 */
+const COMBOS = {
+  '1-3': '優先處理 AI 戰略與治理，先別急著採購工具。',
+  '3-4': '優先處理轉型責任、關鍵職務及主管領導能力。',
+  '4-5': '人才能力與落地機制都需要補強，適合整合人才盤點與試點輔導。'
+};
+const STRATEGY_OK_PROCESS_LOW = '戰略方向已有共識，但流程與場景選擇尚未到位。';
+const ALL_CLEAR = '可進一步評估跨部門規模化、AI Agent 應用及新商業模式創新。';
+
+/* ================= 以下為程式 ================= */
+const app = document.getElementById('app');
+const dlg = document.getElementById('dlg');
+const answers = {};
+const MAX_SCALE = 6;
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+const pick = q => q.options.find(o => o.key === answers[q.id]);
+
+/* ---------- 判讀邏輯 ---------- */
+function diagnose() {
+  const score = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  QUESTIONS.forEach(q => pick(q).signals.forEach(([t, w]) => { score[t] += w; }));
+  const ranked = PRIORITY.slice().sort((a, b) => score[b] - score[a] || PRIORITY.indexOf(a) - PRIORITY.indexOf(b));
+  const main = ranked[0];
+  const linked = ranked.slice(1).find(t => score[t] >= 2) || null;
+
+  let combo = '';
+  if (linked) combo = COMBOS[[main, linked].sort().join('-')] || '';
+  if (!combo && main === 2 && answers.Q1 !== 'D') combo = STRATEGY_OK_PROCESS_LOW;
+  if (!combo) {
+    combo = linked
+      ? `建議以「方案 ${TYPES[main].plan}」為主軸，並同步處理「${TYPES[linked].name.slice(2)}」。`
+      : `建議以「方案 ${TYPES[main].plan}」為主軸優先處理。`;
+  }
+  const allClear = answers.Q1 !== 'D' && answers.Q3 === 'A' && answers.Q5 === 'A';
+
+  /* 依據：本次作答中指向主要問題的選項，權重高者在前 */
+  const evidence = QUESTIONS.map((q, i) => {
+    const o = pick(q);
+    const hit = o.signals.find(([t]) => t === main);
+    return hit ? { text: o.text, reading: o.reading, w: hit[1], i } : null;
+  }).filter(Boolean).sort((a, b) => b.w - a.w || a.i - b.i);
+
+  return { score, ranked, main, linked, combo, allClear, evidence };
+}
+
+/* ---------- 畫面 ---------- */
+function renderIntro() {
+  app.innerHTML = `
+    <section class="hero">
+      <p class="eyebrow">企業 AI 化轉型升級</p>
+      <h1>核心問題快篩</h1>
+      <hr>
+      <p class="lead">用五個關鍵問題，找出企業為什麼需要 AI、AI 應該先改造哪裡、誰必須承擔轉型責任，以及企業是否具備將 AI 投資轉化為經營成果的能力。</p>
+      <p class="lead">五個問題・約 5～10 分鐘</p>
+      <button class="btn" id="start">開始作答</button>
+    </section>
+    <div class="dims">
+      ${QUESTIONS.map(q => `<div><span>${q.id}</span>${esc(q.dim)}</div>`).join('')}
+    </div>`;
+  document.getElementById('start').onclick = () => go(0);
+}
+
+function renderQuestion(i) {
+  const q = QUESTIONS[i];
+  app.innerHTML = `
+    <div class="progress" aria-label="第 ${i + 1} 題，共 ${QUESTIONS.length} 題">
+      ${QUESTIONS.map((_, k) => `<i class="${k <= i ? 'on' : ''}"></i>`).join('')}
+    </div>
+    <p class="eyebrow">${q.id}　|　${esc(q.dim)}</p>
+    <h2>${esc(q.title)}</h2>
+    <p class="facet">診斷面向：${esc(q.facet)}</p>
+    <p class="ask">${esc(q.ask)}</p>
+    <div class="opts" role="radiogroup">
+      ${q.options.map(o => `
+        <button class="opt ${answers[q.id] === o.key ? 'sel' : ''}" role="radio"
+          aria-checked="${answers[q.id] === o.key}" data-key="${o.key}">
+          <b>${o.key}</b><span>${esc(o.text)}</span>
+        </button>`).join('')}
+    </div>
+    <div class="nav"><button class="btn ghost" id="back">上一步</button></div>`;
+  app.querySelectorAll('.opt').forEach(btn => {
+    btn.onclick = () => {
+      answers[q.id] = btn.dataset.key;
+      app.querySelectorAll('.opt').forEach(b => { b.classList.remove('sel'); b.setAttribute('aria-checked', 'false'); });
+      btn.classList.add('sel'); btn.setAttribute('aria-checked', 'true');
+      setTimeout(() => go(i + 1), 220);
+    };
+  });
+  document.getElementById('back').onclick = () => go(i - 1);
+}
+
+function planCard(letter, role) {
+  const p = PLANS[letter];
+  const t = TYPES[p.type];
+  const pill = role === 'main' ? '<span class="pill">優先方案</span>'
+             : role === 'link' ? '<span class="pill soft">連動方案</span>' : '';
+  const cls = role === 'main' ? 'main' : role === 'other' ? 'minor' : '';
+  return `
+    <button class="plan-card ${cls}" data-plan="${letter}">
+      <span class="letter">${letter}</span>
+      <span>
+        <span class="t">方案 ${letter}｜${esc(p.title)}${pill}</span>
+        ${role === 'other' ? '' : `<span class="s" style="display:block">${esc(t.name)}・${esc(t.pain)}</span>`}
+      </span>
+      <span class="go">查看說明 →</span>
+    </button>`;
+}
+
+function renderResult() {
+  const d = diagnose();
+  const M = TYPES[d.main], L = d.linked ? TYPES[d.linked] : null;
+
+  const bars = PRIORITY.map(t => {
+    const cls = t === d.main ? 'main' : t === d.linked ? 'link' : '';
+    const tag = t === d.main ? '主要問題' : t === d.linked ? '連動問題' : '';
+    const pct = Math.round(Math.min(d.score[t], MAX_SCALE) / MAX_SCALE * 100);
+    return `
+      <div class="bar-row ${cls}">
+        <span class="name">${esc(TYPES[t].name)}</span>
+        <span class="bar-track"><span class="bar-fill" style="display:block;width:${pct}%"></span></span>
+        <span class="val">${tag || `訊號 ${d.score[t]}`}</span>
+      </div>`;
+  }).join('');
+
+  const others = ['A', 'B', 'C', 'D', 'E'].filter(k => k !== M.plan && (!L || k !== L.plan));
+
+  const cards = QUESTIONS.map(q => {
+    const o = pick(q);
+    const chips = o.signals.length
+      ? o.signals.slice().sort((a, b) => b[1] - a[1]).map(([t]) => `<span class="chip">${esc(TYPES[t].name)}</span>`).join('')
+      : '<span class="chip">此面向已具基礎</span>';
+    return `
+      <article class="card">
+        <div class="card-hd"><span class="q">${q.id}</span><h3>${esc(q.dim)}</h3></div>
+        <div class="card-bd">
+          <div><p class="label">您的選擇</p><p>${o.key}. ${esc(o.text)}</p></div>
+          <div><p class="label">診斷判讀</p><div class="reading">${esc(o.reading)}</div></div>
+          <div><p class="label">對應核心問題</p><div class="chips">${chips}</div></div>
+        </div>
+      </article>`;
+  }).join('');
+
+  app.innerHTML = `
+    <p class="eyebrow">快篩結果</p>
+    <h1>AI 轉型核心問題初步診斷</h1>
+
+    <section class="verdict">
+      <p class="eyebrow">主要問題</p>
+      <h2>${esc(M.name)}</h2>
+      <p class="label" style="color:var(--gold);margin-top:20px">從您的作答來看</p>
+      <ul class="evidence">${d.evidence.map(e => `<li>${esc(e.text)}</li>`).join('')}</ul>
+      <p class="pain">${esc(d.evidence[0].reading)}</p>
+      <p class="combo">${esc(d.combo)}</p>
+      <button class="btn" data-plan="${M.plan}">查看解方：方案 ${M.plan}｜${esc(PLANS[M.plan].title)}</button>
+    </section>
+    ${d.allClear ? `<p class="healthy"><b>整體基礎良好。</b>${esc(ALL_CLEAR)}</p>` : ''}
+
+    <section class="section">
+      <h2>五大核心問題分布</h2>
+      <p class="muted">依五題作答加總，每個選項會指向一至兩類核心問題。</p>
+      <div class="bars">${bars}</div>
+    </section>
+
+    <section class="section">
+      <h2>建議解方</h2>
+      <p class="muted">點選方案查看建議解方，以及對應的能力面與人才面。</p>
+      <div class="plans">
+        ${planCard(M.plan, 'main')}
+        ${L ? planCard(L.plan, 'link') : ''}
+      </div>
+      <p class="label" style="margin-top:28px">其他方案</p>
+      <div class="plans" style="margin-top:8px">${others.map(k => planCard(k, 'other')).join('')}</div>
+    </section>
+
+    <section class="section">
+      <h2>各題作答與判讀</h2>
+      ${cards}
+    </section>
+
+    <p class="note">單一主管的回答只能視為初步自評，不能直接當成企業的客觀診斷結論。正式企業版建議由董事長／總經理、轉型負責人、人資主管及主要業務主管分別作答，再比較彼此認知的差異。</p>
+    <section class="cta" ${CONTACT && CONTACT.phone ? '' : 'hidden'}>
+      <p class="eyebrow">下一步</p>
+      <h2>預約 30～60 分鐘診斷解讀會議</h2>
+      <p style="margin-top:12px">由顧問為您解讀快篩結果，討論核心問題與優先處理方向。</p>
+      <div class="cta-contact">
+        <p><span>預約聯絡</span>${esc(CONTACT.name || '')}</p>
+        <p><span>電話</span><a href="tel:+886${(CONTACT.phone || '').replace(/^0/, '').replace(/\D/g, '')}${CONTACT.ext ? ',' + CONTACT.ext : ''}">${esc(CONTACT.phone || '')}${CONTACT.ext ? ' 分機 ' + esc(CONTACT.ext) : ''}</a></p>
+        ${CONTACT.email ? `<p><span>Email</span><a href="mailto:${esc(CONTACT.email)}?subject=${encodeURIComponent('預約 AI 轉型快篩診斷解讀會議｜' + (contact.company || ''))}">${esc(CONTACT.email)}</a></p>` : ''}
+      </div>
+    </section>
+    <div class="actions">
+      <button class="btn" id="print">列印／存成 PDF</button>
+      <button class="btn ghost" id="redo">重新作答</button>
+    </div>`;
+
+  app.querySelectorAll('[data-plan]').forEach(b => { b.onclick = () => openPlan(b.dataset.plan); });
+  document.getElementById('print').onclick = () => window.print();
+  document.getElementById('redo').onclick = () => { for (const k in answers) delete answers[k]; go(0); };
+}
+
+function openPlan(letter) {
+  const p = PLANS[letter], t = TYPES[p.type];
+  document.getElementById('dlg-eyebrow').textContent = `方案 ${letter}　|　對應 ${t.name}`;
+  document.getElementById('dlg-title').textContent = p.title;
+  document.getElementById('dlg-pain').textContent = `典型企業痛點：${t.pain}`;
+  document.getElementById('dlg-bd').innerHTML = `
+    <div>
+      <h3>建議解方</h3>
+      <p>${esc(p.form)}</p>
+    </div>
+    <div class="twin">
+      <div>
+        <p class="k">能力面</p>
+        <p class="t">${esc(STRENGTH.capability.name)}</p>
+        <p class="muted">${esc(STRENGTH.capability.desc)}</p>
+      </div>
+      <div>
+        <p class="k">人才面</p>
+        <p class="t">${esc(STRENGTH.talent.name)}</p>
+        <p class="muted">${esc(STRENGTH.talent.desc)}</p>
+        <div class="dims-list">
+          ${p.talent.map(k => `<div><b>${esc(TALENT[k].name)}</b><span class="muted">${esc(TALENT[k].q)}</span></div>`).join('')}
+        </div>
+      </div>
+    </div>
+    `;
+  dlg.showModal();
+}
+document.getElementById('dlg-x').onclick = () => dlg.close();
+dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+
+/* ---------- 聯絡資料 ---------- */
+const contact = { company: '', name: '', title: '', email: '', phone: '' };
+const FIELDS = [
+  { k: 'company', label: '公司名稱', type: 'text',  auto: 'organization' },
+  { k: 'name',    label: '姓名',     type: 'text',  auto: 'name' },
+  { k: 'title',   label: '職稱',     type: 'text',  auto: 'organization-title', optional: true },
+  { k: 'email',   label: 'Email',    type: 'email', auto: 'email' },
+  { k: 'phone',   label: '聯絡電話', type: 'tel',   auto: 'tel' }
+];
+
+function renderContact() {
+  const f = k => FIELDS.find(x => x.k === k);
+  const input = x => `
+    <div class="field">
+      <label for="f-${x.k}">${x.label}${x.optional ? '<span class="opt-tag">（選填）</span>' : '<i>*</i>'}</label>
+      <input id="f-${x.k}" name="${x.k}" type="${x.type}" autocomplete="${x.auto}" value="${esc(contact[x.k])}"${x.optional ? '' : ' required'}>
+      <p class="err" id="e-${x.k}" hidden></p>
+    </div>`;
+  app.innerHTML = `
+    <div class="progress" aria-hidden="true">${QUESTIONS.map(() => '<i class="on"></i>').join('')}</div>
+    <p class="eyebrow">最後一步</p>
+    <h2>留下聯絡資料，查看診斷結果</h2>
+    <p class="lead">五題已完成。填寫以下資料後即可查看 AI 轉型核心問題初步診斷。</p>
+    <form class="form" id="cform" novalidate>
+      ${input(f('company'))}
+      <div class="two">${input(f('name'))}${input(f('title'))}</div>
+      <div class="two">${input(f('email'))}${input(f('phone'))}</div>
+      <div class="hp" aria-hidden="true"><label>網站<input name="website" tabindex="-1" autocomplete="off"></label></div>
+      <div class="consent">
+        <label class="check"><input type="checkbox" id="f-consent"><span>我已閱讀並同意下列個人資料蒐集告知事項。</span></label>
+        <p class="err" id="e-consent" hidden></p>
+        <details>
+          <summary>個人資料蒐集告知事項</summary>
+          <p>一、蒐集機關：360d 才庫事業群。</p>
+          <p>二、蒐集目的：提供 AI 轉型核心問題快篩結果，以及後續診斷解讀與顧問服務之聯繫。</p>
+          <p>三、個人資料類別：姓名、職稱、公司名稱、Email、聯絡電話及本問卷作答內容。</p>
+          <p>四、利用期間、地區、對象及方式：於蒐集目的存續期間，由本事業群於臺灣地區以電子或書面方式利用。</p>
+          <p>五、您得依個人資料保護法第 3 條規定，請求查詢、閱覽、製給複製本、補充或更正、停止蒐集處理利用或刪除您的個人資料。</p>
+          <p>六、您得自由選擇是否提供個人資料；若未提供，將無法查看本快篩結果。</p>
+        </details>
+      </div>
+      <div class="row-btns">
+        <button class="btn" type="submit" id="submit">查看診斷結果</button>
+        <button class="btn ghost" type="button" id="back">上一步</button>
+      </div>
+    </form>`;
+
+  document.getElementById('back').onclick = () => { readContact(); go(QUESTIONS.length - 1); };
+  document.getElementById('cform').onsubmit = async e => {
+    e.preventDefault();
+    readContact();
+    if (!validate()) return;
+    const btn = document.getElementById('submit');
+    btn.disabled = true; btn.textContent = '產生結果中…';
+    if (!document.querySelector('input[name="website"]').value) await send();
+    go(QUESTIONS.length + 1);
+  };
+}
+
+function readContact() {
+  FIELDS.forEach(x => { const el = document.getElementById('f-' + x.k); if (el) contact[x.k] = el.value.trim(); });
+}
+
+function validate() {
+  const msg = {};
+  FIELDS.forEach(x => { if (!x.optional && !contact[x.k]) msg[x.k] = `請填寫${x.label}`; });
+  if (contact.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email)) msg.email = 'Email 格式不正確';
+  if (contact.phone && (contact.phone.replace(/\D/g, '').length < 8 || /[^\d+\-()#\s]/.test(contact.phone))) msg.phone = '電話格式不正確';
+  if (!document.getElementById('f-consent').checked) msg.consent = '請勾選同意個人資料蒐集告知事項';
+  [...FIELDS.map(x => x.k), 'consent'].forEach(k => {
+    const err = document.getElementById('e-' + k), el = document.getElementById('f-' + k);
+    if (msg[k]) { err.textContent = msg[k]; err.hidden = false; el.setAttribute('aria-invalid', 'true'); }
+    else { err.hidden = true; el.removeAttribute('aria-invalid'); }
+  });
+  const first = Object.keys(msg)[0];
+  if (first) document.getElementById('f-' + first).focus();
+  return !first;
+}
+
+async function send() {
+  if (!SHEET_ENDPOINT) return;
+  const d = diagnose();
+  const ans = id => { const q = QUESTIONS.find(x => x.id === id), o = pick(q); return `${o.key}. ${o.text}`; };
+  const payload = {
+    ...contact,
+    q1: ans('Q1'), q2: ans('Q2'), q3: ans('Q3'), q4: ans('Q4'), q5: ans('Q5'),
+    main: TYPES[d.main].name,
+    plan: `方案 ${TYPES[d.main].plan}｜${PLANS[TYPES[d.main].plan].title}`,
+    linked: d.linked ? TYPES[d.linked].name : '',
+    scores: PRIORITY.map(t => `${TYPES[t].name.slice(0, 1)}${d.score[t]}`).join(' '),
+    page: location.href
+  };
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 6000);
+    await fetch(SHEET_ENDPOINT, {
+      method: 'POST', mode: 'no-cors', signal: ctrl.signal,
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    clearTimeout(timer);
+  } catch (err) { /* 送出失敗不影響客戶查看結果 */ }
+}
+
+function go(i) {
+  if (i < 0) renderIntro();
+  else if (i === QUESTIONS.length) renderContact();
+  else if (i > QUESTIONS.length) renderResult();
+  else renderQuestion(i);
+  window.scrollTo(0, 0);
+}
+
+go(-1);
+</script>
+</body>
+</html>
