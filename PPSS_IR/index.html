@@ -443,7 +443,7 @@ function validCfg(st,color=RAINBOW[0]){
     options:{indexAxis:'y',plugins:{legend:{position:'bottom',labels:{boxWidth:10,boxHeight:10,font:{size:13}}},
       datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>=5,anchor:'center',align:'center',font:c=>({size:Math.round(Math.max(11,Math.min(16,c.chart.width/26)))}),formatter:v=>Math.round(v)+'%'},
       tooltip:{callbacks:{label:c=>`${c.dataset.label}：${c.raw}%`}}},
-      scales:{x:{stacked:true,min:0,max:100,display:false},y:{stacked:true,grid:{display:false},border:{color:'#3a3a3a',width:1.5},ticks:{color:'#3a3a3a',font:{size:14},padding:8}}}}};
+      scales:{x:{stacked:true,min:-1,max:100,display:false},y:{stacked:true,grid:{display:false},border:{color:'#3a3a3a',width:1.5},ticks:{color:'#3a3a3a',font:{size:14},padding:8}}}}};
 }
 function clusterCfg(labels,sets,unit=''){
   const many=labels.length*sets.length>36;
