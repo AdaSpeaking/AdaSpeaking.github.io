@@ -392,7 +392,7 @@ function figure(parent,tab,title,subtitle,config,ratio=1.5){
   config.options.plugins=Object.assign(config.bare?{title:{display:false},subtitle:{display:false}}:titleOpts(title,subtitle),config.options.plugins||{});
   if(config.bare){fig.classList.add('bare');delete config.bare}
   if(config.compact){fig.classList.add('compact');delete config.compact}
-  config.plugins=[bgPlugin,...(config.plugins||[])];
+  config.plugins=[...(config.plugins||[])]; // 不畫底色：下載的 PNG 為透明背景（網頁上的白底來自 .fig 的 CSS）
   const fname=safe(config.fname||title)+'.png';delete config.fname;
   const ch=new Chart(cv,config);
   S.charts[tab].push({ch,fname});

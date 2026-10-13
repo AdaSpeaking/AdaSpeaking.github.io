@@ -398,7 +398,7 @@ function figure(parent,tab,title,subtitle,config,ratio=1.5){
   config.options.devicePixelRatio=3;
   config.options.layout={padding:{left:8,right:16,bottom:4,top:0}};
   config.options.plugins=Object.assign(titleOpts(title,subtitle),config.options.plugins||{});
-  config.plugins=[bgPlugin,...(config.plugins||[])];
+  config.plugins=[...(config.plugins||[])]; // 不畫底色：下載的 PNG 為透明背景（網頁上的白底來自 .fig 的 CSS）
   const ch=new Chart(cv,config);
   const fname=safe(title)+'.png';
   S.charts[tab].push({ch,fname});
