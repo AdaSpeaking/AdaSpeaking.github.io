@@ -11,9 +11,9 @@
 :root{
   --ink:#1c2a3a; --ink-2:#4a5a6c; --ink-3:#7c8a99;
   --paper:#f5f7f9; --surface:#ffffff; --line:#dde3e9; --line-2:#c9d2db;
-  --accent:#1b6b73; --accent-2:#e3f0f1;
-  --b1:#1b6b73; --b2:#7fb8bc; --b3:#e6c27f; --b4:#d9776b;
-  --danger:#b3413a;
+  --accent:#b3302f; --accent-2:#f9e7e5;
+  --b1:#a32b2b; --b2:#e8958a; --b3:#efd3b5; --b4:#8a96a3;
+  --danger:#c25e00;
   --font:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Heiti TC",system-ui,sans-serif;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
@@ -23,13 +23,13 @@
   :root:not([data-theme="light"]){
     --ink:#e6ecf1; --ink-2:#b3bfca; --ink-3:#8594a3;
     --paper:#141b22; --surface:#1c252e; --line:#2c3843; --line-2:#3a4855;
-    --accent:#5fb3ba; --accent-2:#1f3438; --danger:#e0776f;
+    --accent:#e57a72; --accent-2:#3a2224; --danger:#f0a050;
   }
 }
 :root[data-theme="dark"]{
   --ink:#e6ecf1; --ink-2:#b3bfca; --ink-3:#8594a3;
   --paper:#141b22; --surface:#1c252e; --line:#2c3843; --line-2:#3a4855;
-  --accent:#5fb3ba; --accent-2:#1f3438; --danger:#e0776f;
+  --accent:#e57a72; --accent-2:#3a2224; --danger:#f0a050;
 }
 *,*::before,*::after{box-sizing:inherit}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -45,8 +45,8 @@ h1{font-size:26px;font-weight:700;letter-spacing:.02em;margin:0;line-height:1.3}
 .scale{display:grid;grid-template-columns:repeat(4,1fr);margin:16px 0 28px;border-radius:3px;overflow:hidden}
 .scale span{font-size:12px;padding:3px 8px;color:#fff;font-weight:500}
 .scale span:nth-child(1){background:var(--b1)}
-.scale span:nth-child(2){background:var(--b2);color:#10333a}
-.scale span:nth-child(3){background:var(--b3);color:#4a3510}
+.scale span:nth-child(2){background:var(--b2);color:#4a1410}
+.scale span:nth-child(3){background:var(--b3);color:#5a3a10}
 .scale span:nth-child(4){background:var(--b4)}
 
 .uploads{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -90,7 +90,7 @@ h3.sec:first-child{margin-top:0}
 .fig .cv{position:relative;width:100%}
 .fig .foot{display:flex;justify-content:flex-end;padding-top:6px}
 .fig .foot .btn{background:#fff;color:#1c2a3a;border-color:#d5dce3;font-size:12px;padding:4px 10px}
-.fig .foot .btn:hover{color:#1b6b73;border-color:#1b6b73}
+.fig .foot .btn:hover{color:#b3302f;border-color:#b3302f}
 
 .tbl-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:6px}
 table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
@@ -143,8 +143,8 @@ td.desc{min-width:320px;color:var(--ink-2);font-size:13px}
 </style>
 <style>
 .hl td.tag{white-space:nowrap;font-weight:500}
-.hl td.tag.hi{color:#1b6b73}
-.hl td.tag.lo{color:#b3413a}
+.hl td.tag.hi{color:#b3302f}
+.hl td.tag.lo{color:#5c6b7a}
 .two{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px}
 .note{font-size:12px;color:var(--ink-3);margin:8px 0 0}
 .bench>*,.grid>*{min-width:0}
@@ -211,15 +211,15 @@ const VALID = [
   {col:'操守性轉換', name:'規範認同', hi:'高傾向', mid:'適中', lo:'低傾向'},
   {col:'社會期許轉換', name:'社會期許', hi:'太高', mid:'適中', lo:'太低'},
 ];
-const VLEVEL = [{k:'高',c:'#d98c3f'},{k:'中',c:'#1b6b73'},{k:'低',c:'#4b6fa8'}];
+const VLEVEL = [{k:'高',c:'#b3302f'},{k:'中',c:'#e8a598'},{k:'低',c:'#6d7b8a'}];
 const BANDS = [
-  {k:'85分以上', c:'#1b6b73', fg:'#fff', t:v=>v>=85},
-  {k:'51-84分', c:'#7fb8bc', fg:'#10333a', t:v=>v>=51&&v<85},
-  {k:'16-50分', c:'#e6c27f', fg:'#4a3510', t:v=>v>=16&&v<51},
-  {k:'15分以下', c:'#d9776b', fg:'#fff', t:v=>v<16},
+  {k:'85分以上', c:'#a32b2b', fg:'#fff', t:v=>v>=85},
+  {k:'51-84分', c:'#e8958a', fg:'#4a1410', t:v=>v>=51&&v<85},
+  {k:'16-50分', c:'#efd3b5', fg:'#5a3a10', t:v=>v>=16&&v<51},
+  {k:'15分以下', c:'#8a96a3', fg:'#fff', t:v=>v<16},
 ];
-const PAL = ['#1b6b73','#d98c3f','#4b6fa8','#8c5a9e','#6a9a3c','#c4534a','#3aa0a8','#b8963a','#6d7b8a','#d46a9a','#2f4f6f','#9fb04a'];
-const TYPE_COL = ['#1b6b73','#d98c3f','#4b6fa8','#8c5a9e','#6a9a3c'];
+const PAL = ['#b3302f','#e0893a','#7a1f3d','#d9a441','#5c6b7a','#e07a8a','#8c4a2f','#c98f8f','#3d4f5f','#f0b27a','#a05a7a','#9aa5b1'];
+const TYPE_COL = ['#a32b2b','#e0893a','#d96b7a','#7a1f3d','#c9a26b'];
 const SKIP_FIELDS = new Set(['人員編號','姓名','生日','Email','聯絡電話','到職日','離職日','人員備註','工作經驗']);
 const FONT = '"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif';
 
