@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PPSS 進階報表產生器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1c2a3a; --ink-2:#4a5a6c; --ink-3:#7c8a99;
+  --paper:#f5f7f9; --surface:#ffffff; --line:#dde3e9; --line-2:#c9d2db;
+  --accent:#1b6b73; --accent-2:#e3f0f1;
+  --b1:#1b6b73; --b2:#7fb8bc; --b3:#e6c27f; --b4:#d9776b;
+  --danger:#b3413a;
+  --font:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Heiti TC",system-ui,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#e6ecf1; --ink-2:#b3bfca; --ink-3:#8594a3;
+    --paper:#141b22; --surface:#1c252e; --line:#2c3843; --line-2:#3a4855;
+    --accent:#5fb3ba; --accent-2:#1f3438; --danger:#e0776f;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#e6ecf1; --ink-2:#b3bfca; --ink-3:#8594a3;
+  --paper:#141b22; --surface:#1c252e; --line:#2c3843; --line-2:#3a4855;
+  --accent:#5fb3ba; --accent-2:#1f3438; --danger:#e0776f;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.6}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1280px;margin:0 auto;padding:28px 24px 64px}
+
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+h1{font-size:26px;font-weight:700;letter-spacing:.02em;margin:0;line-height:1.3}
+.privacy{color:var(--ink-3);font-size:13px;margin:0}
+.scale{display:grid;grid-template-columns:repeat(4,1fr);margin:16px 0 28px;border-radius:3px;overflow:hidden}
+.scale span{font-size:12px;padding:3px 8px;color:#fff;font-weight:500}
+.scale span:nth-child(1){background:var(--b1)}
+.scale span:nth-child(2){background:var(--b2);color:#10333a}
+.scale span:nth-child(3){background:var(--b3);color:#4a3510}
+.scale span:nth-child(4){background:var(--b4)}
+
+.uploads{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.drop{position:relative;border:1.5px dashed var(--line-2);border-radius:8px;padding:18px 20px;background:var(--surface);transition:border-color .15s,background .15s}
+.drop.over{border-color:var(--accent);background:var(--accent-2)}
+.drop.ok{border-style:solid;border-color:var(--accent)}
+.drop h2{font-size:16px;margin:0 0 2px;font-weight:700}
+.drop p{margin:0;color:var(--ink-2);font-size:13px}
+.drop .status{margin-top:10px;font-size:13px;color:var(--accent);font-weight:500;min-height:1.6em}
+.drop .status.err{color:var(--danger)}
+.drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.opt{font-weight:400;color:var(--ink-3);font-size:13px}
+
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;margin:22px 0 0;padding:12px 16px;background:var(--surface);border:1px solid var(--line);border-radius:8px;font-size:14px}
+.bar .n{font-weight:700;font-size:15px}
+.bar label{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.bar input[type=number]{width:64px;padding:3px 6px;border:1px solid var(--line-2);border-radius:4px;background:var(--paper)}
+.bar .grp{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
+.bar .lbl{color:var(--ink-3)}
+
+nav.tabs{display:flex;align-items:flex-end;gap:4px;margin:28px 0 0;border-bottom:1px solid var(--line-2)}
+nav.tabs button{background:none;border:0;padding:10px 18px;font-size:16px;font-weight:500;color:var(--ink-2);border-bottom:3px solid transparent;margin-bottom:-1px}
+nav.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+nav.tabs .spacer{flex:1}
+.btn{border:1px solid var(--line-2);background:var(--surface);border-radius:6px;padding:6px 12px;font-size:13px;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.08);color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+nav.tabs .btn{margin-bottom:8px}
+
+section.panel{padding-top:24px}
+section.panel[hidden]{display:none}
+h3.sec{font-size:18px;margin:32px 0 12px;font-weight:700}
+h3.sec:first-child{margin-top:0}
+.sub{color:var(--ink-2);font-size:13px;margin:-8px 0 14px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px}
+.grid.wide{grid-template-columns:repeat(auto-fill,minmax(520px,1fr))}
+.fig{background:#fff;border:1px solid var(--line);border-radius:6px;padding:12px 12px 8px;color:#1c2a3a}
+.fig .cv{position:relative;width:100%}
+.fig .foot{display:flex;justify-content:flex-end;padding-top:6px}
+.fig .foot .btn{background:#fff;color:#1c2a3a;border-color:#d5dce3;font-size:12px;padding:4px 10px}
+.fig .foot .btn:hover{color:#1b6b73;border-color:#1b6b73}
+
+.tbl-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:500;color:var(--ink-2);background:var(--paper);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.num{text-align:right;white-space:nowrap}
+td.desc{min-width:320px;color:var(--ink-2);font-size:13px}
+.dim-block{display:grid;grid-template-columns:minmax(300px,420px) 1fr;gap:16px;align-items:start;margin-bottom:22px}
+
+.bench{display:grid;grid-template-columns:320px 1fr;gap:24px;align-items:start}
+.editor{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;max-height:calc(100vh - 40px);overflow:auto}
+.editor label.f{display:block;font-size:13px;color:var(--ink-2);margin-bottom:4px}
+.editor select{width:100%;padding:7px 8px;border:1px solid var(--line-2);border-radius:5px;background:var(--paper)}
+.editor .hint{font-size:12px;color:var(--ink-3);margin:10px 0 8px;line-height:1.5}
+.gl{list-style:none;margin:0;padding:0}
+.gl li{display:grid;grid-template-columns:20px 1fr 36px 44px;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid var(--line)}
+.gl li.off{opacity:.45}
+.gl .raw{font-size:11px;color:var(--ink-3);grid-column:2/5;margin-top:-4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gl input[type=text]{width:100%;padding:3px 6px;border:1px solid var(--line-2);border-radius:4px;background:var(--paper);font-size:14px}
+.gl .cnt{font-size:12px;color:var(--ink-3);text-align:right}
+.gl .mv{display:flex;gap:2px}
+.gl .mv button{border:1px solid var(--line-2);background:var(--paper);border-radius:3px;width:20px;height:22px;padding:0;font-size:11px;line-height:1}
+.editor .row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.chk{display:flex;align-items:center;gap:6px;font-size:13px;margin-top:10px}
+
+.group-head{display:flex;align-items:baseline;gap:10px;margin:34px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--ink)}
+.group-head h4{margin:0;font-size:18px}
+.group-head span{color:var(--ink-3);font-size:13px}
+.sw{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;margin:0 0 10px;color:var(--ink-2)}
+.sw b{color:var(--ink);font-weight:500}
+
+.empty{padding:60px 20px;text-align:center;color:var(--ink-3);border:1px dashed var(--line-2);border-radius:8px;margin-top:28px}
+.addpie{display:flex;gap:8px;align-items:center;margin:0 0 14px;flex-wrap:wrap;font-size:14px}
+.addpie select{padding:5px 8px;border:1px solid var(--line-2);border-radius:5px;background:var(--surface)}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:8px 16px;border-radius:6px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+.warn{font-size:13px;color:var(--danger);margin:8px 0 0}
+
+@media (max-width:860px){
+  .uploads{grid-template-columns:1fr}
+  .bench{grid-template-columns:1fr}
+  .editor{position:static;max-height:none}
+  .dim-block{grid-template-columns:1fr}
+  .grid,.grid.wide{grid-template-columns:1fr}
+  nav.tabs{flex-wrap:wrap}
+  nav.tabs button{padding:8px 12px;font-size:15px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.hl td.tag{white-space:nowrap;font-weight:500}
+.hl td.tag.hi{color:#1b6b73}
+.hl td.tag.lo{color:#b3413a}
+.two{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px}
+.note{font-size:12px;color:var(--ink-3);margin:8px 0 0}
+.bench>*,.grid>*{min-width:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>PPSS 進階報表產生器</h1>
+    <p class="privacy">資料只在你的瀏覽器內處理，不會上傳到任何地方。</p>
+  </header>
+  <div class="scale" aria-label="分數區間色彩"><span>85 分以上</span><span>51–84 分</span><span>16–50 分</span><span>15 分以下</span></div>
+
+  <div class="uploads">
+    <div class="drop" id="dropScore">
+      <h2>分數資料</h2>
+      <p>心測後台＞報表管理＞右上角下載的 Excel，需含「人員編號」與 14 項性格向度分數。</p>
+      <div class="status" id="stScore"></div>
+      <input type="file" accept=".xlsx,.xls,.csv" id="fScore" aria-label="上傳分數資料">
+    </div>
+    <div class="drop" id="dropPerson">
+      <h2>人員資料 <span class="opt">選填</span></h2>
+      <p>心測後台＞人員管理＞右上角下載的 Excel。校標分組欄位（含 [自訂] 標籤）都從這裡來，以「人員編號」對應。</p>
+      <div class="status" id="stPerson"></div>
+      <input type="file" accept=".xlsx,.xls,.csv" id="fPerson" aria-label="上傳人員資料">
+    </div>
+  </div>
+
+  <div id="app" hidden>
+    <div class="bar">
+      <span class="n" id="nLabel"></span>
+      <span class="lbl" id="joinLabel"></span>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="bg" aria-selected="true">背景資訊</button>
+      <button role="tab" data-tab="overall" aria-selected="false">整體</button>
+      <button role="tab" data-tab="bench" aria-selected="false">校標分析</button>
+      <span class="spacer"></span>
+      <button class="btn primary" id="zipBtn">下載本頁所有圖（ZIP）</button>
+    </nav>
+    <section class="panel" id="p-bg"></section>
+    <section class="panel" id="p-overall" hidden></section>
+    <section class="panel" id="p-bench" hidden>
+      <div class="bench">
+        <aside class="editor" id="editor"></aside>
+        <div id="benchOut"></div>
+      </div>
+    </section>
+  </div>
+  <div class="empty" id="emptyState">先上傳分數資料，圖表會自動產生。</div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script>
+const DESC = {"積極性":{"85分以上":["決斷力強、工作能力強、成就需求高、具企圖心、解決問題的能力強、具應變能力的","若組織遠景及賦予職權不具吸引力時，恐難吸引積極性高的人一同奮鬥"],"51-84分":["具有相當程度的決斷力、成就動機和企圖心；具有蠻不錯的問題解決能力和應變能力","希望組織遠景及所被賦予職權具有一定的吸引力，以驅動個人跟組織一同奮鬥的動力；在缺乏事業發展舞台情況下，職務流動機率相對較大"],"16-50分":["較不在乎組織名氣及個人職銜；具有稍高的工作穩定性；對於現況容易感到滿足","有點優柔寡斷；成就需求和工作壓力忍受度稍低；解決問題的能力和應變能力略微偏弱"],"15分以下":["不在乎組織名氣與個人職銜；工作穩定性較高；較容易滿足於現況","較優柔寡斷、成就需求較淡薄、工作壓力忍受度較低、不擅長解決問題的、應變能力較弱的"]},"責任性":{"85分以上":["做事負責任的、追求完美、工作至上、保守的","不易授權；凡事事必躬親，容易自我加深無形的工作壓力"],"51-84分":["做事具有相當程度的責任心；整體而言是個追求完美的人；多數情況下是有始有終的；對你而言工作是相對重要的；給人略微保守的感覺","不太容易授權給他人；很多時侯會因為事必躬親而無形地加重自己的工作壓力；"],"16-50分":["對工作職責較傾向於公私分明，並認為工作不是人生的全部；在工作之餘，也會注重生活品質；會適度地授權","有時傾向以較少時間完成任務，反而忽略了品質；稍顯馬虎；有時候抱持著享樂主義的想法，給人比較率性的感覺"],"15分以下":["注重生活品質；容易授權；對工作職責抱持公私分明的態度，認為工作不是人生的全部","較追求速率的、較馬馬虎虎的、享樂主義的、較率性的"]},"成熟性":{"85分以上":["自信心強、沉著冷靜、情緒較安定的、矛盾忍受力強、個性開放的、獨立自主、具定見的","因缺乏情緒交流，較易給人有距離的感覺；也因為較難釋放內心壓力，所以主管無法早期得知而給予協助"],"51-84分":["具有相當程度的自信心；多數時候給人沉著冷靜的印象；具一定程度的情緒控制力和矛盾忍受力；相對而言是個性開放的、獨立自主且相當有主見的人","在某些情況下因缺乏情緒交流，較易給人有距離的感覺；有時較難釋放內心壓力，所以主管無法早期得知而給予協助"],"16-50分":["在多數情況下顯得天真不做作的；相對來說比較容易排解心理的壓力；整體而言給人直率而無心機的感覺","有時候情緒控制力和矛盾忍受力會稍弱；比較沒有自信心、較拘謹的、倚賴性較高的、較缺少定見的"],"15分以下":["天真不做作的；容易將內心的壓力釋放出來；是個直率沒有心機的人","自信心較弱、情緒起伏較大、矛盾忍受力較弱、較拘謹、較依賴他人、較無定見"]},"務實性":{"85分以上":["重實際、講求精確、講求規律、重秩序、一絲不茍、井井有條的","容易見樹不見林的；容易出現重複檢查而失去優先順序的情況；容易拘泥枝微末節；較缺乏彈性的"],"51-84分":["多數情況下是重實際的、講求精確和規律的、重秩序的、做事一絲不苟的；具有一定的條理性","相對而言較容易見樹不見林的；在某些事情上較容易為了追求精確、拘泥於細枝末節而忽略了優先順序；有時稍嫌缺乏適度的彈性"],"16-50分":["比較注重大方向；較不拘泥小節的；大致來講，具有嘗試新方向及新方法的勇氣","比較容易見林不見樹；有些大而化之的；比較不喜歡從事需要高度精確的工作；稍微有些急躁的"],"15分以下":["注重大方向、不拘泥小節；具有嘗試新方法的勇氣","較大而化之、不喜歡從事需要高度精確的工作、急躁的"]},"社交性":{"85分以上":["善察言觀色、處事圓融的、善解人意且令人愉快的、人緣好的、隨和的","帶有目的性地溝通；他人較不容易分辨其所表達之意見是否為其內心真實的想法；會因討好對方而隱藏可能產生衝突的爭執點"],"51-84分":["具有相當程度的察言觀色能力；整體而言是個處事圓融、善解人意、隨和且好相處的人","有時會有目的性地溝通；在某些情況下，，他人較不容易分辨其所表達之意見是否為內心真實的想法；有時會因討好對方而隱藏可能產生衝突的爭執點"],"16-50分":["在多數情況下，會表達出個人的真實想法；在工作場合中比較不會受到人情牽絆","有時不太重視人際關係；交際能力稍微偏弱；多數情況下喜歡獨來獨往的；有時會給人不夠善解人意的印象"],"15分以下":["會表達出符合個人的真實想法；不易被人情牽絆","較不善解人意、較喜歡獨來獨往、較不擅交際的、較不重視人際關係"]},"合群性":{"85分以上":["歸屬感的需求高、重情感的、團體取向、重視周遭環境的","離開團體會覺得很孤單；喜歡團隊合作性質的工作；較不堅持已見，容易放棄個人主張"],"51-84分":["對團體有歸屬感的需求；整體而言是個重情感的、團體取向的、重視周遭環境的人","離開團體會稍微覺得孤單；相對而言較喜歡以團隊運作為主的工作；然而有時較容易放棄個人主張"],"16-50分":["大致上能夠獨立完成任務；多數情況下不會盲從團隊、保有自己忠實專業的想法；比較不會與他人結黨","有時顯得較為孤僻的、對人較無親疏之分；比較傾向個人取向；與週遭環境較為疏離"],"15分以下":["能夠獨立完成任務；不會盲從團隊，保有自己忠實專業的想法；不易與他人結黨","較孤僻、無親疏之分、較個人取向、與週遭環境較為疏離"]},"創意性":{"85分以上":["想法與眾不同、見解獨到、求新求變、富想像力、思考流暢的","較脫離常軌的，若沒有被賞識容易感到挫折；有時需要有互相激盪的同伴，否則在創意路上容易感到孤單"],"51-84分":["有時想法與眾不同，會提出與他人不一樣的見解，是個求新求變的、富有想像力的且思考流暢的人","稍微脫離常軌的；如果沒有得到賞識，會產生一定程度的挫折感；在多數情況下，需要有互相激盪的同伴，否則在創意路上容易感到孤單"],"16-50分":["屬於比較實務取向的人；對於需要固定性作業的工作或是不需變化的工作較為擅長","多數時候顯得傳統保守、太遵循常規；相較之下比較不喜歡大幅變化的事物，有時候思維較沒有彈性"],"15分以下":["較實務取向的；擅長固定性作業的工作或是不需變化的工作","較傳統、過於遵循常規、較不喜歡變化、思維上較不具彈性"]},"表達性":{"85分以上":["說服力強、表達生動、能言善道、善於說明事理的","較容易急於分享自己想要說的話，而未顧慮對象或內容適當與否；較不擅於傾聽"],"51-84分":["具有相當不錯的說服技巧、言語表達能力和說明事理的能力；多數時候都能夠以生動富有變化的方式表達。","在某些情況下，會稍微急於表達自己想要說的話，而未顧慮對象或內容適當與否；有時不太善於傾聽"],"16-50分":["某種程度上，較傾向當個聆聽者；不太會主動做出言語批判；相對來說較不好辯","言語表達能力和說服能力略微偏弱；有時稍微含蓄，稍顯木訥"],"15分以下":["傾向當個聆聽者；不會主動做出言語批判；不喜好辯論的","較含蓄木訥、較不擅言辭、溝通說服的能力較弱"]},"學習性":{"85分以上":["喜歡接受新知、好奇心強、具嘗試的熱忱、勇於突破","興趣廣泛，比較難鎖定單一項目深入專精地學習；容易在學習過程中轉移目標"],"51-84分":["具有相當程度的好奇心，擁有嘗試新事物的熱忱和突破的勇氣；對於接受新知抱持開放的態度","對多數事物具有興趣，一定程度上較難鎖定單一項目深入專精地學習；有時候容易在學習過程中轉移目標"],"16-50分":["多數時候傾向選擇自己有興趣的領域學習，較容易專注於特定項目並進行深度學習，多數情況下能遵奉體制的","有時候會給人比較封閉、守成的感覺，較安於現狀的、較不求成長的、較不求甚解的"],"15分以下":["傾向選擇自己有興趣的領域學習，容易專注地進行深度學習，能遵奉體制的","較封閉守成，較安於現狀的、較不求成長的、較不求甚解的"]},"細心":{"85分以上":["觀察入微、心思細膩、小心謹慎、敏銳、觀察力強的","對於他人的行為語言太過於敏感；容易庸人自擾；容易鑽牛角尖"],"51-84分":["具有良好的觀察能力；在多數情況下給人心思細膩的、敏銳的、小心謹慎的感覺","有時容易過度解讀他人意思；與一般人相比，較容易庸人自擾；某些情況下容易鑽牛角尖"],"16-50分":["較隨性的；不容易給人帶來壓力，不太會因為一點小事情就感到焦慮","較為粗心的；有些粗枝大葉的；有時感覺比較遲緩，觀察力較不敏銳，有時會忽略掉一些細節"],"15分以下":["隨性的；不會給人帶來壓力；幾乎不會因為小事就感到焦慮","較粗枝大葉、感覺比較遲緩、較不具觀察力、較粗心、容易忽略細節"]},"耐心":{"85分以上":["不急不徐、有毅力、能忍受挫折的、有始有終、溫和敦厚、適應力強的。","緩慢的；較容易延遲進度的；不喜歡同時進行多項事情的"],"51-84分":["具有一定程度的毅力和挫折忍受力；在多數情況下是有始有終、不急不徐的；個性溫和敦厚；適應能力優於一般人；能夠將專注力放在同一件事情上","有些緩慢的；有時較容易延遲進度；相對而言比較不喜歡多件事情同時進行"],"16-50分":["較不喜歡受限制的；多數情況下對於一成不變的事物感到厭倦，樂於接受不一樣的做事流程；對新鮮事物的喜好程度高；整體而言行事步調迅速","個性有點急；有點缺乏耐心，相對喜歡多樣化的；挫折忍受力稍低"],"15分以下":["不喜歡受到限制；對於一成不變的事物感到厭倦；樂於接受不一樣的做事流程；喜愛新鮮的事物；做事步調迅速","性子較急的、較缺乏耐心的、喜歡多樣化、挫折忍受力較低"]},"親和性":{"85分以上":["活潑開朗、喜歡人群、具親和力、以團體為依歸的","不具主管架勢；較無法表達嚴肅主題；較不易約束團體成員的"],"51-84分":["多數時候是活潑開朗、喜歡人群的；相當具有親和力；整體而言，傾向以團體為依歸","比較不具主管架勢，較不易約束團體成員；有時較無法表達嚴肅主題"],"16-50分":["外表形象稍具威嚴感；有時感情表達較為內斂","稍顯內向的；覺得獨處的時候比較自在；親和力稍弱的；對於參與團體的意願沒有很高"],"15分以下":["外表形象較具威嚴感；感情表達較為內斂","較內向、喜歡獨處、較不具親和力，對於參與團體的意願較低"]},"領導性":{"85分以上":["領導力強的、具組織整合力的、指標力強的、知人善任、好引人注意的、條理分明的","自我主張強烈；給人過於強勢的感受；給人好出風頭的印象"],"51-84分":["具有良好的領導力、組織整合力和指標力；大多數情況下能知人善任、條理分明，有時後會希望可以引起別人的注目","在某些情況下表現出強烈的自我主張；有時容易給人過於強勢的感受，給別人好出風頭的印象"],"16-50分":["整體而言願意接受他人的領導；較易接受他人的意見；能在團體決策後，扮演好自己的組織任務角色","組織整合的能力較弱；主導性不強；比較喜歡性質單一的工作；整體而言不是一個好出風頭的人，比較獨善其身"],"15分以下":["願意接受他人的領導；樂於接受不一樣的想法；喜歡團體決策，並會扮演好自己的組織任務角色","組織整合力弱、喜好性質單純的工作、不好出風頭、獨善其身"]},"邏輯性":{"85分以上":["分析整合力強的、思路清晰、冷靜理智的、說服力強的","強詞奪理；好辯且固執己見；遇到超出認知思維的事物時，會產生挫折感；應多加注意，避免成為「思想的巨人，行動的侏儒」"],"51-84分":["具有良好的分析整合能力以及說服力；多數情況下思路清晰、冷靜理智","有時較易強詞奪理；有些好辯而固執己見；遇到某些超出認知思維的事物時，較容易感到挫折；某種程度上應多加注意，避免成為「思想的巨人，行動的侏儒」"],"16-50分":["比較能跳脫既定思維框架，偏向發散性思考特質；在某種程度上，即便思考方向尚不明朗，仍能在抽象的概念中進行思考；擁有較強的行動力","思維較為感性、思路較為籠統、有時候思慮不夠周延；較不擅長於說服他人"],"15分以下":["屬於發散性思考特質；擅於擺脫既定思維框架；有辦法運用抽象的概念進行思考；行動力強","思維感性但思路籠統、思慮不夠周延、不擅長於說服他人"]}}; // {向度:{區間:[高分描述,低分描述]}}
+const DIMS = ['積極性','責任性','成熟性','務實性','社交性','合群性','創意性','表達性','學習性','細心','耐心','親和性','領導性','邏輯性'];
+const TYPES = ['領導管理型','創意思考型','人際親和型','負責謹慎型','成熟幹練型'];
+const VALID = [
+  {col:'忠誠性轉換', name:'順應主管', hi:'高傾向', mid:'適中', lo:'低傾向'},
+  {col:'操守性轉換', name:'規範認同', hi:'高傾向', mid:'適中', lo:'低傾向'},
+  {col:'社會期許轉換', name:'社會期許', hi:'太高', mid:'適中', lo:'太低'},
+];
+const VLEVEL = [{k:'高',c:'#d98c3f'},{k:'中',c:'#1b6b73'},{k:'低',c:'#4b6fa8'}];
+const BANDS = [
+  {k:'85分以上', c:'#1b6b73', fg:'#fff', t:v=>v>=85},
+  {k:'51-84分', c:'#7fb8bc', fg:'#10333a', t:v=>v>=51&&v<85},
+  {k:'16-50分', c:'#e6c27f', fg:'#4a3510', t:v=>v>=16&&v<51},
+  {k:'15分以下', c:'#d9776b', fg:'#fff', t:v=>v<16},
+];
+const PAL = ['#1b6b73','#d98c3f','#4b6fa8','#8c5a9e','#6a9a3c','#c4534a','#3aa0a8','#b8963a','#6d7b8a','#d46a9a','#2f4f6f','#9fb04a'];
+const TYPE_COL = ['#1b6b73','#d98c3f','#4b6fa8','#8c5a9e','#6a9a3c'];
+const SKIP_FIELDS = new Set(['人員編號','姓名','生日','Email','聯絡電話','到職日','離職日','人員備註','工作經驗']);
+const FONT = '"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif';
+
+const S = {score:null, person:null, all:[], tab:'bg', charts:{bg:[],overall:[],bench:[]}, extraPies:[], benchField:null, benchCfg:{}, showAll:true};
+const DLP = (async()=>{try{if(window.claude&&typeof window.claude.use==='function')return await window.claude.use('downloads')}catch(e){}return null})();
+
+/* ---------- helpers ---------- */
+const $ = s=>document.querySelector(s);
+const el = (tag, attrs={}, ...kids)=>{const e=document.createElement(tag);for(const[k,v]of Object.entries(attrs)){if(k==='class')e.className=v;else if(k==='text')e.textContent=v;else if(k.startsWith('on'))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v)}for(const c of kids)if(c!=null)e.append(c);return e};
+const norm = h=>String(h??'').replace(/[*＊]/g,'').replace(/[\s\u3000]+/g,'').trim();
+const num = v=>{if(v===null||v===undefined||v==='')return NaN;return typeof v==='number'?v:parseFloat(String(v).replace(/[^\d.\-]/g,''))};
+const avg = a=>{const b=a.filter(x=>!isNaN(x));return b.length?b.reduce((s,x)=>s+x,0)/b.length:NaN};
+const pct = x=>isNaN(x)?'–':(x*100).toFixed(1)+'%';
+const safe = s=>String(s).replace(/[\\/:*?"<>|\s]+/g,'_');
+const str = v=>(v==null||v==='')?'(空白)':String(v).trim();
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2600)}
+function bandOf(v){return BANDS.find(b=>b.t(v))}
+
+/* ---------- file parsing ---------- */
+function readFile(file){
+  return new Promise((res,rej)=>{
+    const fr=new FileReader();
+    fr.onload=()=>{try{res(XLSX.read(new Uint8Array(fr.result),{type:'array',cellDates:true}))}catch(e){rej(e)}};
+    fr.onerror=()=>rej(fr.error);
+    fr.readAsArrayBuffer(file);
+  });
+}
+function findTable(wb, want){
+  let best=null;S._why='';
+  for(const name of wb.SheetNames){
+    const aoa=XLSX.utils.sheet_to_json(wb.Sheets[name],{header:1,raw:true,defval:null,blankrows:false});
+    for(let i=0;i<Math.min(aoa.length,12);i++){
+      const hdr=(aoa[i]||[]).map(norm);
+      if(!hdr.includes('人員編號'))continue;
+      const nDims=DIMS.filter(x=>hdr.includes(x)).length;
+      const isScore=nDims>=10;
+      if((want==='score'&&isScore)||(want==='person'&&!isScore)){
+        const cand={name,aoa,hi:i,hdr,nDims};
+        if(!best||(want==='score'&&nDims>best.nDims))best=cand;
+      }
+      if(want==='score'&&!isScore)S._why=`「${name}」有人員編號，但只認得 ${nDims} 項性格向度（需至少 10 項）。`;
+      if(want==='person'&&isScore)S._why='這看起來是分數檔，請放到左邊。';
+      break;
+    }
+  }
+  if(!best)return null;
+  const seen={};const hdr=best.hdr.map((h,j)=>{let k=h||('欄'+(j+1));if(seen[k]){seen[k]++;k=k+'（'+seen[k]+'）'}else seen[k]=1;return k});
+  const rows=[];
+  for(let i=best.hi+1;i<best.aoa.length;i++){
+    const r=best.aoa[i];const id=r[hdr.indexOf('人員編號')];
+    if(id===null||id===undefined||String(id).trim()==='')continue;
+    const o={};hdr.forEach((h,j)=>{const v=r[j];o[h]=typeof v==='string'?v.trim():v});o['人員編號']=String(id).trim();rows.push(o);
+  }
+  return {sheet:best.name,headers:hdr,rows};
+}
+async function handle(kind,file){
+  const st=kind==='score'?$('#stScore'):$('#stPerson');
+  const box=kind==='score'?$('#dropScore'):$('#dropPerson');
+  st.className='status';st.textContent='讀取中…';
+  try{
+    const wb=await readFile(file);
+    const t=findTable(wb,kind);
+    if(!t){
+      st.className='status err';
+      st.textContent=(kind==='score'?'找不到分數表。':'找不到人員表。')+(S._why||'前 12 列內沒有「人員編號」欄。');
+      box.classList.remove('ok');return;
+    }
+    if(kind==='score'){
+      const miss=[...DIMS,...TYPES,...VALID.map(v=>v.col)].filter(x=>!t.headers.includes(x));
+      S.score=t;
+      st.textContent=`${file.name}｜${t.rows.length} 筆`+(miss.length?`｜缺少欄位：${miss.join('、')}`:'');
+      if(miss.length)st.className='status err';
+    }else{S.person=t;st.textContent=`${file.name}｜${t.rows.length} 筆`}
+    box.classList.add('ok');
+    build();
+  }catch(e){st.className='status err';st.textContent='無法讀取這個檔案：'+(e.message||e);box.classList.remove('ok')}
+}
+for(const [kind,inp,box] of [['score','#fScore','#dropScore'],['person','#fPerson','#dropPerson']]){
+  const i=$(inp),b=$(box);
+  i.addEventListener('change',()=>{if(i.files[0])handle(kind,i.files[0]);i.value=''});
+  b.addEventListener('dragover',e=>{e.preventDefault();b.classList.add('over')});
+  b.addEventListener('dragleave',()=>b.classList.remove('over'));
+  b.addEventListener('drop',e=>{e.preventDefault();b.classList.remove('over');const f=e.dataTransfer.files[0];if(f)handle(kind,f)});
+}
+
+/* ---------- merge ---------- */
+function ageOf(r){
+  let a=num(r['年齡']);if(!isNaN(a))return a;
+  const b=r['生日'];const d=b instanceof Date?b:(b?new Date(String(b).replace(/\./g,'-')):null);
+  if(!d||isNaN(d))return NaN;const n=new Date();a=n.getFullYear()-d.getFullYear();
+  if(n<new Date(n.getFullYear(),d.getMonth(),d.getDate()))a--;return a;
+}
+function build(){
+  if(!S.score)return;
+  const pmap=new Map();let pKeys=[];
+  if(S.person){pKeys=S.person.headers.filter(h=>h!=='人員編號');for(const p of S.person.rows)pmap.set(p['人員編號'],p)}
+  let matched=0;
+  S.all=S.score.rows.map(r=>{
+    const o={...r};const p=pmap.get(r['人員編號']);
+    if(p)matched++;
+    for(const h of pKeys)o['P:'+h]=p?p[h]:null;
+    for(const d of DIMS)o[d]=num(o[d]);
+    for(const t of TYPES)o[t]=num(o[t]);
+    o.__age=ageOf(o);
+    o.__ageBin=isNaN(o.__age)?'未提供':o.__age<=20?'20歲以下':o.__age<=30?'21-30歲':o.__age<=40?'31-40歲':o.__age<=50?'41-50歲':'51歲以上';
+    o.__gen=isNaN(o.__age)?'未提供':o.__age>=60?'60及以上':o.__age<30?'20世代':(Math.floor(o.__age/10)*10)+'世代';
+    return o;
+  });
+  $('#nLabel').textContent=`有效資料 N＝${S.all.length}`;
+  const unmatched=S.person?S.all.length-matched:0;
+  $('#joinLabel').textContent=S.person?`人員檔對應到 ${matched} 筆`+(unmatched?`，${unmatched} 筆分數找不到人員資料（校標會歸為「(空白)」）`:''):'未上傳人員資料：校標分析無法使用';
+  const okU=f=>{const u=new Set(S.all.map(r=>r[f]).filter(v=>v!=null&&v!==''));return u.size>=1&&u.size<=60};
+  const okH=h=>!SKIP_FIELDS.has(h)&&!/^欄\d+$/.test(h);
+  S.benchFields=pKeys.filter(okH).map(h=>'P:'+h).filter(okU);
+  S.pieFields=[...S.benchFields,...['部門','職務名稱','職務類型','層級類別'].filter(h=>S.score.headers.includes(h)).filter(okU)];
+  if(!S.benchFields.includes(S.benchField))S.benchField=S.benchFields.includes('P:性別')?'P:性別':(S.benchFields[0]||null);
+  $('#app').hidden=false;$('#emptyState').hidden=true;
+  render();
+}
+function fieldLabel(f){return f.startsWith('P:')?f.slice(2).replace(/^\[自訂\]/,''):f}
+
+/* ---------- stats（照 Excel 模板邏輯） ---------- */
+function stats(rows){
+  const n=rows.length;
+  // 14 向度：平均取整數；同分時排後面的向度視為較高（同 Excel 的 +ROW()/1e6）
+  const dims=DIMS.map((d,i)=>{
+    const v=rows.map(r=>r[d]).filter(x=>!isNaN(x));
+    const a=v.length?Math.round(avg(v)):NaN;
+    return {name:d,i,avg:a,key:isNaN(a)?-1:a+(i+1)/1e6,bands:BANDS.map(b=>n?v.filter(b.t).length/n:0)};
+  });
+  const ranked=dims.filter(d=>!isNaN(d.avg)).sort((a,b)=>b.key-a.key);
+  const hi=ranked.slice(0,3);
+  const lo=ranked.length>=5?ranked.slice(-2):[];
+  // 五型：每人取最高分（含並列），四捨五入整數％，差額補到人次最多的那一型
+  const cnt=TYPES.map(()=>0);
+  for(const r of rows){const vs=TYPES.map(t=>r[t]);if(vs.every(isNaN))continue;const mx=Math.max(...vs.filter(x=>!isNaN(x)));vs.forEach((x,j)=>{if(x===mx)cnt[j]++})}
+  const tot=cnt.reduce((a,b)=>a+b,0)||1;
+  const rp=cnt.map(c=>Math.round(c*100/tot));
+  const diff=100-rp.reduce((a,b)=>a+b,0);
+  const mi=cnt.indexOf(Math.max(...cnt));
+  const typePct=rp.map((p,j)=>(cnt.some(c=>c)?p+(j===mi?diff:0):0));
+  // 效度
+  const valid=VALID.map(v=>{const vs=rows.map(r=>str(r[v.col]));return {name:v.name,lv:[v.hi,v.mid,v.lo].map(k=>n?vs.filter(x=>x===k).length/n:0)}});
+  return {n,dims,hi,lo,typeCnt:cnt,typePct,valid};
+}
+
+/* ---------- charts ---------- */
+Chart.register(ChartDataLabels);
+Chart.defaults.font.family=FONT;Chart.defaults.font.size=13;Chart.defaults.color='#2b3a4a';
+Chart.defaults.plugins.datalabels.display=false;
+Chart.defaults.animation=false;
+const bgPlugin={id:'paper',beforeDraw(c){const{ctx,width,height}=c;ctx.save();ctx.globalCompositeOperation='destination-over';ctx.fillStyle='#fff';ctx.fillRect(0,0,width,height);ctx.restore()}};
+function titleOpts(title,subtitle){return{title:{display:true,text:title,font:{size:17,weight:'700'},color:'#1c2a3a',padding:{top:4,bottom:subtitle?2:12}},subtitle:{display:!!subtitle,text:subtitle||'',color:'#6b7a89',font:{size:12},padding:{bottom:12}}}}
+function figure(parent,tab,title,subtitle,config,ratio=1.5){
+  const cv=el('canvas');
+  const box=el('div',{class:'cv'},cv);box.style.aspectRatio=String(ratio);
+  const btn=el('button',{class:'btn',type:'button',text:'下載 PNG'});
+  const fig=el('div',{class:'fig'},box,el('div',{class:'foot'},btn));
+  parent.append(fig);
+  config.options=config.options||{};
+  config.options.responsive=true;config.options.maintainAspectRatio=false;
+  config.options.devicePixelRatio=3;
+  config.options.layout={padding:{left:8,right:16,bottom:4,top:0}};
+  config.options.plugins=Object.assign(titleOpts(title,subtitle),config.options.plugins||{});
+  config.plugins=[bgPlugin,...(config.plugins||[])];
+  const ch=new Chart(cv,config);
+  const fname=safe(title)+'.png';
+  S.charts[tab].push({ch,fname});
+  btn.addEventListener('click',()=>new Promise(r=>cv.toBlob(r,'image/png')).then(b=>save(b,fname)));
+  return fig;
+}
+function pieCfg(labels,data,colors){
+  const tot=data.reduce((a,b)=>a+b,0);
+  return {type:'pie',data:{labels,datasets:[{data,backgroundColor:colors||labels.map((_,i)=>PAL[i%PAL.length]),borderColor:'#fff',borderWidth:2}]},
+    options:{plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:12}},
+      datalabels:{display:ctx=>tot&&ctx.dataset.data[ctx.dataIndex]/tot>=.04,color:'#fff',font:{weight:'700',size:12},textAlign:'center',
+        formatter:v=>`${v}人\n${(v/tot*100).toFixed(1)}%`}}}};
+}
+function typePieCfg(st){
+  const labels=TYPES.map((t,j)=>t);
+  return {type:'pie',data:{labels,datasets:[{data:st.typePct,backgroundColor:TYPE_COL,borderColor:'#fff',borderWidth:2}]},
+    options:{plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:12}},
+      tooltip:{callbacks:{label:c=>`${c.label}：${c.raw}%（最高分人次 ${st.typeCnt[c.dataIndex]}）`}},
+      datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>=4,color:'#fff',font:{weight:'700',size:13},formatter:v=>v+'%'}}}};
+}
+function dimBarCfg(st,color){
+  const d=st.dims;
+  return {type:'bar',data:{labels:d.map(x=>x.name),datasets:[{label:'百分等級平均數',data:d.map(x=>x.avg),
+      backgroundColor:color||d.map(x=>isNaN(x.avg)?'#ccc':bandOf(x.avg).c),borderRadius:3,maxBarThickness:44}]},
+    options:{plugins:{legend:{display:false},datalabels:{display:true,anchor:'end',align:'end',color:'#1c2a3a',font:{weight:'700'},formatter:v=>isNaN(v)?'':v}},
+      scales:{y:{min:0,max:100,ticks:{stepSize:20},grid:{color:'#eef1f4'}},x:{grid:{display:false},ticks:{autoSkip:false,maxRotation:0}}}}};
+}
+function distCfg(labels,bandMatrix){
+  return {type:'bar',data:{labels,datasets:BANDS.map((b,bi)=>({label:b.k,data:bandMatrix.map(m=>+(m[bi]*100).toFixed(1)),backgroundColor:b.c,datalabels:{color:b.fg}}))},
+    options:{indexAxis:'y',plugins:{legend:{position:'bottom',labels:{boxWidth:12}},
+      datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>=6,font:{size:11,weight:'500'},formatter:v=>Math.round(v)+'%'},
+      tooltip:{callbacks:{label:c=>`${c.dataset.label}：${c.raw}%`}}},
+      scales:{x:{stacked:true,min:0,max:100,ticks:{callback:v=>v+'%'},grid:{color:'#eef1f4'}},y:{stacked:true,grid:{display:false},ticks:{autoSkip:false}}}}};
+}
+function validCfg(st){
+  return {type:'bar',data:{labels:st.valid.map(v=>v.name),datasets:VLEVEL.map((L,li)=>({label:L.k,data:st.valid.map(v=>+(v.lv[li]*100).toFixed(1)),backgroundColor:L.c,borderRadius:2,maxBarThickness:48}))},
+    options:{plugins:{legend:{position:'bottom',labels:{boxWidth:12}},
+      datalabels:{display:true,anchor:'end',align:'end',color:'#1c2a3a',font:{size:11,weight:'500'},formatter:v=>Math.round(v)+'%'},
+      tooltip:{callbacks:{label:c=>`${c.dataset.label}：${c.raw}%`}}},
+      scales:{y:{min:0,max:100,ticks:{stepSize:20,callback:v=>v+'%'},grid:{color:'#eef1f4'}},x:{grid:{display:false}}}}};
+}
+function clusterCfg(labels,sets,unit=''){
+  const many=labels.length*sets.length>36;
+  return {type:'bar',data:{labels,datasets:sets.map(s=>({label:s.label,data:s.data,backgroundColor:s.color,borderRadius:2,maxBarThickness:36}))},
+    options:{plugins:{legend:{position:'bottom',labels:{boxWidth:12}},
+      datalabels:{display:!many,anchor:'end',align:'end',color:'#1c2a3a',font:{size:10},formatter:v=>isNaN(v)?'':v+unit}},
+      scales:{y:{min:0,max:100,ticks:{stepSize:20,callback:v=>v+unit},grid:{color:'#eef1f4'}},x:{grid:{display:false},ticks:{autoSkip:false,maxRotation:0}}}}};
+}
+
+/* ---------- tables ---------- */
+function hlTable(st){
+  const t=el('table',{class:'hl'});
+  t.append(el('thead',{},el('tr',{},...['方向','向度','百分等級平均數','分數所在範圍','相對優勢','相對弱勢'].map(h=>el('th',{text:h})))));
+  const tb=el('tbody');
+  const row=(tag,cls,d)=>{const b=bandOf(d.avg);const tx=DESC[d.name]?.[b.k]||['',''];
+    tb.append(el('tr',{},el('td',{class:'tag '+cls,text:tag}),el('td',{class:'tag',text:d.name}),el('td',{class:'num',text:d.avg}),el('td',{text:b.k}),el('td',{class:'desc',text:tx[0]}),el('td',{class:'desc',text:tx[1]})))};
+  st.hi.forEach(d=>row('高分項','hi',d));st.lo.forEach(d=>row('低分項','lo',d));
+  t.append(tb);return el('div',{class:'tbl-wrap'},t);
+}
+function dimTable(st){
+  const t=el('table');
+  t.append(el('thead',{},el('tr',{},...['向度','百分等級平均數',...BANDS.map(b=>b.k)].map(h=>el('th',{text:h})))));
+  const tb=el('tbody');
+  for(const d of st.dims)tb.append(el('tr',{},el('td',{text:d.name}),el('td',{class:'num',text:isNaN(d.avg)?'–':d.avg}),...d.bands.map(x=>el('td',{class:'num',text:pct(x)}))));
+  t.append(tb);return el('div',{class:'tbl-wrap'},t);
+}
+function validTable(st){
+  const t=el('table');
+  t.append(el('thead',{},el('tr',{},...['效度指標','高（高傾向／太高）','中（適中）','低（低傾向／太低）'].map(h=>el('th',{text:h})))));
+  const tb=el('tbody');
+  for(const v of st.valid)tb.append(el('tr',{},el('td',{text:v.name}),...v.lv.map(x=>el('td',{class:'num',text:pct(x)}))));
+  t.append(tb);return el('div',{class:'tbl-wrap'},t);
+}
+
+/* ---------- render ---------- */
+function destroy(tab){for(const c of S.charts[tab])c.ch.destroy();S.charts[tab]=[]}
+function render(){
+  for(const t of ['bg','overall','bench'])destroy(t);
+  if(S.tab==='bg')renderBg();else if(S.tab==='overall')renderOverall();else renderBench();
+}
+function countBy(rows,f,order){
+  const m=new Map();for(const r of rows){const v=str(r[f]);m.set(v,(m.get(v)||0)+1)}
+  let keys=[...m.keys()];
+  if(order)keys=[...order.filter(k=>m.has(k)),...keys.filter(k=>!order.includes(k)).sort((a,b)=>m.get(b)-m.get(a))];
+  else keys.sort((a,b)=>m.get(b)-m.get(a));
+  return {labels:keys,data:keys.map(k=>m.get(k))};
+}
+function renderBg(){
+  const p=$('#p-bg');p.innerHTML='';
+  const N=S.all.length;
+  const add=el('div',{class:'addpie'});
+  const sel=el('select',{'aria-label':'選擇欄位'});
+  for(const f of S.pieFields)sel.append(el('option',{value:f,text:fieldLabel(f)+(f.startsWith('P:')?'（人員檔）':'')}));
+  add.append(el('span',{text:'加一張圓餅圖：'}),sel,el('button',{class:'btn',type:'button',text:'加入',onclick:()=>{if(sel.value&&!S.extraPies.includes(sel.value)){S.extraPies.push(sel.value);render()}}}));
+  if(S.pieFields.length)p.append(add);
+  const g=el('div',{class:'grid'});p.append(g);
+  const specs=[];
+  if(S.score.headers.includes('性別'))specs.push(['性別','性別',['男','女']]);
+  if(S.score.headers.includes('教育'))specs.push(['教育','學歷',['博士','碩士','大學','專科','高中職','國中']]);
+  specs.push(['__ageBin','年齡區間',['20歲以下','21-30歲','31-40歲','41-50歲','51歲以上']]);
+  const genF=S.benchFields.find(f=>/世代/.test(f));
+  specs.push([genF||'__gen',genF?'世代':'世代（依年齡）',['20世代','30世代','40世代','50世代','60及以上']]);
+  const deptF=S.benchFields.find(f=>/^P:\[自訂\].*部門/.test(f));
+  if(deptF)specs.push([deptF,fieldLabel(deptF),null]);
+  for(const f of S.extraPies)specs.push([f,fieldLabel(f),null,true]);
+  for(const [f,t,order,removable] of specs){
+    const c=countBy(S.all,f,order);
+    const fig=figure(g,'bg',t,`N＝${N}`,pieCfg(c.labels,c.data),1.1);
+    if(removable){const rm=el('button',{class:'btn',type:'button',text:'移除',onclick:()=>{S.extraPies=S.extraPies.filter(x=>x!==f);render()}});fig.querySelector('.foot').prepend(rm);rm.style.marginRight='auto'}
+  }
+}
+function renderOverall(){
+  const p=$('#p-overall');p.innerHTML='';
+  const st=stats(S.all);const N=st.n;
+  p.append(el('h3',{class:'sec',text:'行為類型分布與性格向度'}));
+  const g=el('div',{class:'grid wide'});p.append(g);
+  figure(g,'overall','整體｜行為類型分布',`N＝${N}｜每人取最高分類型（並列皆計）`,typePieCfg(st),1.25);
+  figure(g,'overall','整體｜14項性格向度',`百分等級平均數｜N＝${N}`,dimBarCfg(st),1.6);
+  p.append(el('h3',{class:'sec',text:'高分項與低分項'}));
+  p.append(el('p',{class:'sub',text:'平均數最高的 3 項與最低的 2 項，描述依平均數所在區間帶出。'}));
+  p.append(hlTable(st));
+  p.append(el('h3',{class:'sec',text:'各向度分數分布'}));
+  const g2=el('div',{class:'grid wide'});p.append(g2);
+  const tw=el('div');g2.append(tw);tw.append(dimTable(st));
+  figure(g2,'overall','整體｜各向度分數分布',`N＝${N}`,distCfg(DIMS,st.dims.map(d=>d.bands)),1.1);
+  p.append(el('h3',{class:'sec',text:'作答效度'}));
+  const g3=el('div',{class:'grid wide'});p.append(g3);
+  figure(g3,'overall','整體｜作答效度',`N＝${N}`,validCfg(st),1.6);
+  const vt=el('div');g3.append(vt);vt.append(validTable(st));
+}
+
+/* ---------- bench ---------- */
+function cfgFor(f){
+  if(!S.benchCfg[f])S.benchCfg[f]=countBy(S.all,f).labels.map(v=>({raw:v,label:v,on:v!=='(空白)'}));
+  return S.benchCfg[f];
+}
+function groupsFor(f){
+  const cfg=cfgFor(f);const order=[];const map=new Map();
+  for(const c of cfg){if(!c.on)continue;const L=c.label.trim()||c.raw;map.set(c.raw,L);if(!order.includes(L))order.push(L)}
+  const buckets=new Map(order.map(L=>[L,[]]));
+  for(const r of S.all){const L=map.get(str(r[f]));if(L)buckets.get(L).push(r)}
+  return order.map(L=>({label:L,rows:buckets.get(L)})).filter(g=>g.rows.length);
+}
+let benchTimer;
+function benchRerender(){clearTimeout(benchTimer);benchTimer=setTimeout(()=>{destroy('bench');renderBenchOut()},250)}
+function renderEditor(){
+  const ed=$('#editor');ed.innerHTML='';
+  const sel=el('select',{id:'benchField'});
+  for(const f of S.benchFields){const u=new Set(S.all.map(r=>r[f]).filter(v=>v!=null&&v!=='')).size;sel.append(el('option',{value:f,text:`${f.slice(2)}（${u} 類）`}))}
+  sel.value=S.benchField;
+  sel.addEventListener('change',()=>{S.benchField=sel.value;renderBench()});
+  ed.append(el('label',{class:'f',for:'benchField',text:'校標欄位'}),sel);
+  ed.append(el('p',{class:'hint',text:'欄位來自人員資料。改「顯示名稱」可重新命名；多個值填同一個名稱就會合併成一群。取消勾選即排除，箭頭調整順序。'}));
+  const cfg=cfgFor(S.benchField);
+  const counts=countBy(S.all,S.benchField);const cmap=new Map(counts.labels.map((l,i)=>[l,counts.data[i]]));
+  const ul=el('ul',{class:'gl'});
+  cfg.forEach((c,i)=>{
+    const cb=el('input',{type:'checkbox','aria-label':'納入 '+c.raw});cb.checked=c.on;
+    const inp=el('input',{type:'text',value:c.label,'aria-label':'顯示名稱'});
+    const li=el('li',{class:c.on?'':'off'});
+    cb.addEventListener('change',()=>{c.on=cb.checked;li.classList.toggle('off',!c.on);benchRerender()});
+    inp.addEventListener('change',()=>{c.label=inp.value;renderEditor();benchRerender()});
+    const up=el('button',{type:'button','aria-label':'上移',text:'▲',onclick:()=>{if(i>0){[cfg[i-1],cfg[i]]=[cfg[i],cfg[i-1]];renderEditor();benchRerender()}}});
+    const dn=el('button',{type:'button','aria-label':'下移',text:'▼',onclick:()=>{if(i<cfg.length-1){[cfg[i+1],cfg[i]]=[cfg[i],cfg[i+1]];renderEditor();benchRerender()}}});
+    li.append(cb,inp,el('span',{class:'cnt',text:(cmap.get(c.raw)||0)+'人'}),el('span',{class:'mv'},up,dn));
+    if(c.label!==c.raw)li.append(el('span',{class:'raw',text:'原始值：'+c.raw}));
+    ul.append(li);
+  });
+  ed.append(ul);
+  const all=el('input',{type:'checkbox'});all.checked=S.showAll;
+  all.addEventListener('change',()=>{S.showAll=all.checked;benchRerender()});
+  ed.append(el('label',{class:'chk'},all,'比較圖加入「整體」'));
+  ed.append(el('div',{class:'row'},
+    el('button',{class:'btn',type:'button',text:'依人數排序',onclick:()=>{cfg.sort((a,b)=>(cmap.get(b.raw)||0)-(cmap.get(a.raw)||0));renderEditor();benchRerender()}}),
+    el('button',{class:'btn',type:'button',text:'還原此欄位',onclick:()=>{delete S.benchCfg[S.benchField];renderEditor();benchRerender()}})));
+}
+function renderBench(){
+  destroy('bench');
+  if(!S.benchField){
+    $('#editor').innerHTML='';$('#editor').hidden=true;
+    $('#benchOut').innerHTML='';$('#benchOut').append(el('div',{class:'empty',text:S.person?'人員資料裡沒有可用的分群欄位（每欄需 1–60 類）。':'校標欄位來自人員資料，請先上傳人員資料。'}));
+    return;
+  }
+  $('#editor').hidden=false;renderEditor();renderBenchOut();
+}
+function renderBenchOut(){
+  const out=$('#benchOut');out.innerHTML='';
+  const f=S.benchField;const FL=fieldLabel(f);
+  const groups=groupsFor(f);
+  if(!groups.length){out.append(el('div',{class:'empty',text:'這個欄位目前沒有可用的分群，請在左側勾選至少一群。'}));return}
+  const whole=stats(S.all);
+  const gs=groups.map((g,i)=>({...g,st:stats(g.rows),color:PAL[i%PAL.length]}));
+  const sets=fn=>{const s=gs.map(g=>({label:g.label,data:fn(g.st),color:g.color}));if(S.showAll)s.push({label:'整體',data:fn(whole),color:'#a9b4be'});return s};
+  out.append(el('h3',{class:'sec',text:`${FL}｜群組比較`}));
+  const t=el('table');
+  t.append(el('thead',{},el('tr',{},...['群組','人數',...TYPES,'高分項','低分項'].map(h=>el('th',{text:h})))));
+  const tb=el('tbody');
+  const rowOf=(label,st)=>el('tr',{},el('td',{text:label}),el('td',{class:'num',text:st.n}),...st.typePct.map(x=>el('td',{class:'num',text:x+'%'})),el('td',{text:st.hi.map(d=>d.name).join('、')}),el('td',{text:st.lo.map(d=>d.name).join('、')||'–'}));
+  for(const g of gs)tb.append(rowOf(g.label,g.st));
+  tb.append(rowOf('整體',whole));
+  t.append(tb);out.append(el('div',{class:'tbl-wrap'},t));
+  const small=gs.filter(g=>g.st.n<5).map(g=>g.label);
+  if(small.length)out.append(el('p',{class:'warn',text:`人數少於 5 人：${small.join('、')}，平均數參考性低。`}));
+  const g1=el('div',{class:'grid wide'});g1.style.marginTop='16px';out.append(g1);
+  figure(g1,'bench',`${FL}｜14項性格向度比較`,'百分等級平均數',clusterCfg(DIMS,sets(st=>st.dims.map(d=>d.avg))),1.6);
+  figure(g1,'bench',`${FL}｜行為類型分布比較`,'各群百分比',clusterCfg(TYPES,sets(st=>st.typePct),'%'),1.6);
+  out.append(el('h3',{class:'sec',text:`${FL}｜各群明細`}));
+  for(const g of gs){
+    out.append(el('div',{class:'group-head'},el('h4',{text:g.label}),el('span',{text:`N＝${g.st.n}`})));
+    const gg=el('div',{class:'grid'});out.append(gg);
+    figure(gg,'bench',`${g.label}｜行為類型分布`,`N＝${g.st.n}`,typePieCfg(g.st),1.15);
+    figure(gg,'bench',`${g.label}｜14項性格向度`,`百分等級平均數｜N＝${g.st.n}`,dimBarCfg(g.st),1.4);
+    figure(gg,'bench',`${g.label}｜作答效度`,`N＝${g.st.n}`,validCfg(g.st),1.4);
+    const hw=el('div');hw.style.marginTop='12px';out.append(hw);hw.append(hlTable(g.st));
+  }
+}
+
+/* ---------- tabs & downloads ---------- */
+document.querySelectorAll('nav.tabs [role=tab]').forEach(b=>b.addEventListener('click',()=>{
+  S.tab=b.dataset.tab;
+  document.querySelectorAll('nav.tabs [role=tab]').forEach(x=>x.setAttribute('aria-selected',x===b));
+  for(const t of ['bg','overall','bench'])$('#p-'+t).hidden=t!==S.tab;
+  render();
+}));
+async function save(blob,filename){
+  const DL=await DLP;
+  if(DL){
+    try{await DL.save({filename,data:blob});toast('已下載 '+filename)}
+    catch(e){if(e&&e.code==='declined')return;if(e&&e.code==='rate_limited'){toast('上一個下載還在確認中，請稍候');return}toast('下載失敗：'+(e&&(e.message||e.code)||e))}
+  }else{
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  }
+}
+$('#zipBtn').addEventListener('click',async()=>{
+  const list=S.charts[S.tab];if(!list.length){toast('這一頁還沒有圖');return}
+  const btn=$('#zipBtn');btn.disabled=true;btn.textContent='打包中…';
+  try{
+    const zip=new JSZip();const used={};
+    for(const c of list){
+      const b=await new Promise(r=>c.ch.canvas.toBlob(r,'image/png'));
+      let n=c.fname;if(used[n]){used[n]++;n=n.replace(/\.png$/,`_${used[n]}.png`)}else used[n]=1;
+      zip.file(n,b);
+    }
+    const blob=await zip.generateAsync({type:'blob'});
+    const tabName={bg:'背景資訊',overall:'整體',bench:'校標_'+fieldLabel(S.benchField||'')}[S.tab];
+    await save(blob,safe(`PPSS_${tabName}`)+'.zip');
+  }finally{btn.disabled=false;btn.textContent='下載本頁所有圖（ZIP）'}
+});
+(async()=>{try{await document.fonts.load('16px "Noto Sans TC"')}catch(e){}if(S.score)render()})();
+</script>
+</body>
+</html>
