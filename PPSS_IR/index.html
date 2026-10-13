@@ -148,6 +148,8 @@ td.desc{min-width:320px;color:var(--ink-2);font-size:13px}
 .two{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px}
 .note{font-size:12px;color:var(--ink-3);margin:8px 0 0}
 .bench>*,.grid>*{min-width:0}
+.fig.bare{max-width:340px;width:100%;justify-self:start}
+.fig.bare .foot::before{content:attr(data-name);margin-right:auto;font-size:12px;color:#6b7a89;align-self:center}
 </style>
 </head>
 <body>
@@ -377,13 +379,14 @@ function figure(parent,tab,title,subtitle,config,ratio=1.5){
   const cv=el('canvas');
   const box=el('div',{class:'cv'},cv);box.style.aspectRatio=String(ratio);
   const btn=el('button',{class:'btn',type:'button',text:'下載 PNG'});
-  const fig=el('div',{class:'fig'},box,el('div',{class:'foot'},btn));
+  const fig=el('div',{class:'fig'},box,el('div',{class:'foot','data-name':title},btn));
   parent.append(fig);
   config.options=config.options||{};
   config.options.responsive=true;config.options.maintainAspectRatio=false;
   config.options.devicePixelRatio=3;
-  config.options.layout={padding:{left:8,right:16,bottom:4,top:0}};
-  config.options.plugins=Object.assign(titleOpts(title,subtitle),config.options.plugins||{});
+  config.options.layout=config.options.layout||{padding:{left:8,right:16,bottom:4,top:0}};
+  config.options.plugins=Object.assign(config.bare?{title:{display:false},subtitle:{display:false}}:titleOpts(title,subtitle),config.options.plugins||{});
+  if(config.bare){fig.classList.add('bare');delete config.bare}
   config.plugins=[bgPlugin,...(config.plugins||[])];
   const ch=new Chart(cv,config);
   const fname=safe(title)+'.png';
@@ -410,12 +413,15 @@ function typePieCfg(st){
         textAlign:'center',font:ctx=>({size:Math.round(Math.max(15,Math.min(26,ctx.chart.width/20))),weight:'400',lineHeight:1.45}),
         formatter:(v,ctx)=>`${TYPES[ctx.dataIndex]}\n${v}%`}}}};
 }
-function dimBarCfg(st,color){
-  const d=st.dims;
-  return {type:'bar',data:{labels:d.map(x=>x.name),datasets:[{label:'百分等級平均數',data:d.map(x=>x.avg),
-      backgroundColor:color||d.map(x=>isNaN(x.avg)?'#ccc':bandOf(x.avg).c),borderRadius:3,maxBarThickness:44}]},
-    options:{plugins:{legend:{display:false},datalabels:{display:true,anchor:'end',align:'end',color:'#1c2a3a',font:{weight:'700'},formatter:v=>isNaN(v)?'':v}},
-      scales:{y:{min:0,max:100,ticks:{stepSize:20},grid:{color:'#eef1f4'}},x:{grid:{display:false},ticks:{autoSkip:false,maxRotation:0}}}}};
+// 14 向度：照 Excel 版——橫條、單一粉紅、細條、大字、數值標在條尾、無標題（方便塞簡報）
+function dimBarCfg(st){
+  const d=st.dims;const fs=c=>Math.round(Math.max(13,Math.min(24,c.chart.width/15)));
+  return {bare:true,type:'bar',data:{labels:d.map(x=>x.name),datasets:[{data:d.map(x=>x.avg),backgroundColor:'#ee6a9e',
+      barThickness:c=>Math.max(5,Math.round(c.chart.width/34))}]},
+    options:{indexAxis:'y',layout:{padding:{right:40}},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw}`}},
+      datalabels:{display:true,anchor:'end',align:'end',offset:2,color:'#3a3a3a',font:c=>({size:fs(c),weight:'400'}),formatter:v=>isNaN(v)?'':v}},
+      scales:{x:{min:0,max:100,display:false,grid:{display:false}},
+        y:{border:{display:false},grid:{display:false},ticks:{autoSkip:false,color:'#3a3a3a',padding:10,font:c=>({size:fs(c)})}}}}};
 }
 function distCfg(labels,bandMatrix){
   return {type:'bar',data:{labels,datasets:BANDS.map((b,bi)=>({label:b.k,data:bandMatrix.map(m=>+(m[bi]*100).toFixed(1)),backgroundColor:b.c,datalabels:{color:b.fg}}))},
@@ -507,7 +513,7 @@ function renderOverall(){
   p.append(el('h3',{class:'sec',text:'行為類型分布與性格向度'}));
   const g=el('div',{class:'grid wide'});p.append(g);
   figure(g,'overall','整體｜行為類型分布',`N＝${N}｜每人取最高分類型（並列皆計）`,typePieCfg(st),1);
-  figure(g,'overall','整體｜14項性格向度',`百分等級平均數｜N＝${N}`,dimBarCfg(st),1.6);
+  figure(g,'overall','整體｜14項性格向度',`百分等級平均數｜N＝${N}`,dimBarCfg(st),0.62);
   p.append(el('h3',{class:'sec',text:'高分項與低分項'}));
   p.append(el('p',{class:'sub',text:'平均數最高的 3 項與最低的 2 項，描述依平均數所在區間帶出。'}));
   p.append(hlTable(st));
@@ -601,7 +607,7 @@ function renderBenchOut(){
     out.append(el('div',{class:'group-head'},el('h4',{text:g.label}),el('span',{text:`N＝${g.st.n}`})));
     const gg=el('div',{class:'grid'});out.append(gg);
     figure(gg,'bench',`${g.label}｜行為類型分布`,`N＝${g.st.n}`,typePieCfg(g.st),1);
-    figure(gg,'bench',`${g.label}｜14項性格向度`,`百分等級平均數｜N＝${g.st.n}`,dimBarCfg(g.st),1.4);
+    figure(gg,'bench',`${g.label}｜14項性格向度`,`百分等級平均數｜N＝${g.st.n}`,dimBarCfg(g.st),0.62);
     figure(gg,'bench',`${g.label}｜作答效度`,`N＝${g.st.n}`,validCfg(g.st),1.4);
     const hw=el('div');hw.style.marginTop='12px';out.append(hw);hw.append(hlTable(g.st));
   }
