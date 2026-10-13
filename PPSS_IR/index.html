@@ -219,7 +219,7 @@ const BANDS = [
   {k:'15分以下', c:'#8a96a3', fg:'#fff', t:v=>v<16},
 ];
 const PAL = ['#b3302f','#e0893a','#7a1f3d','#d9a441','#5c6b7a','#e07a8a','#8c4a2f','#c98f8f','#3d4f5f','#f0b27a','#a05a7a','#9aa5b1'];
-const TYPE_COL = ['#a32b2b','#e0893a','#d96b7a','#7a1f3d','#c9a26b'];
+const TYPE_COL = ['#8ea8ee','#e4898a','#f6cd78','#8cc485','#efa07f'];
 const SKIP_FIELDS = new Set(['人員編號','姓名','生日','Email','聯絡電話','到職日','離職日','人員備註','工作經驗']);
 const FONT = '"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif';
 
@@ -398,12 +398,17 @@ function pieCfg(labels,data,colors){
       datalabels:{display:ctx=>tot&&ctx.dataset.data[ctx.dataIndex]/tot>=.04,color:'#fff',font:{weight:'700',size:12},textAlign:'center',
         formatter:v=>`${v}人\n${(v/tot*100).toFixed(1)}%`}}}};
 }
+// 行為類型圓餅：照 Excel 版配色（上淺下深漸層），類型名＋百分比直接標在扇形上
+const TYPE_GRAD = [['#bccbf4','#8ea8ee'],['#f1b8b6','#e4898a'],['#fce3ae','#f6cd78'],['#b9dcb3','#8cc485'],['#f6c4ae','#efa07f']];
 function typePieCfg(st){
-  const labels=TYPES.map((t,j)=>t);
-  return {type:'pie',data:{labels,datasets:[{data:st.typePct,backgroundColor:TYPE_COL,borderColor:'#fff',borderWidth:2}]},
-    options:{plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:12}},
+  const grad=(ctx)=>{const c=ctx.chart,a=c.chartArea,j=ctx.dataIndex;if(!a)return TYPE_GRAD[j][1];
+    const g=c.ctx.createLinearGradient(0,a.top,0,a.bottom);g.addColorStop(0,TYPE_GRAD[j][0]);g.addColorStop(1,TYPE_GRAD[j][1]);return g};
+  return {type:'pie',data:{labels:TYPES,datasets:[{data:st.typePct,backgroundColor:grad,borderWidth:0}]},
+    options:{rotation:0,layout:{padding:8},plugins:{legend:{display:false},
       tooltip:{callbacks:{label:c=>`${c.label}：${c.raw}%（最高分人次 ${st.typeCnt[c.dataIndex]}）`}},
-      datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>=4,color:'#fff',font:{weight:'700',size:13},formatter:v=>v+'%'}}}};
+      datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>=3,color:'#1f1f1f',anchor:'center',align:'end',offset:ctx=>Math.round(ctx.chart.width/40),
+        textAlign:'center',font:ctx=>({size:Math.round(Math.max(15,Math.min(26,ctx.chart.width/20))),weight:'400',lineHeight:1.45}),
+        formatter:(v,ctx)=>`${TYPES[ctx.dataIndex]}\n${v}%`}}}};
 }
 function dimBarCfg(st,color){
   const d=st.dims;
@@ -501,7 +506,7 @@ function renderOverall(){
   const st=stats(S.all);const N=st.n;
   p.append(el('h3',{class:'sec',text:'行為類型分布與性格向度'}));
   const g=el('div',{class:'grid wide'});p.append(g);
-  figure(g,'overall','整體｜行為類型分布',`N＝${N}｜每人取最高分類型（並列皆計）`,typePieCfg(st),1.25);
+  figure(g,'overall','整體｜行為類型分布',`N＝${N}｜每人取最高分類型（並列皆計）`,typePieCfg(st),1);
   figure(g,'overall','整體｜14項性格向度',`百分等級平均數｜N＝${N}`,dimBarCfg(st),1.6);
   p.append(el('h3',{class:'sec',text:'高分項與低分項'}));
   p.append(el('p',{class:'sub',text:'平均數最高的 3 項與最低的 2 項，描述依平均數所在區間帶出。'}));
@@ -595,7 +600,7 @@ function renderBenchOut(){
   for(const g of gs){
     out.append(el('div',{class:'group-head'},el('h4',{text:g.label}),el('span',{text:`N＝${g.st.n}`})));
     const gg=el('div',{class:'grid'});out.append(gg);
-    figure(gg,'bench',`${g.label}｜行為類型分布`,`N＝${g.st.n}`,typePieCfg(g.st),1.15);
+    figure(gg,'bench',`${g.label}｜行為類型分布`,`N＝${g.st.n}`,typePieCfg(g.st),1);
     figure(gg,'bench',`${g.label}｜14項性格向度`,`百分等級平均數｜N＝${g.st.n}`,dimBarCfg(g.st),1.4);
     figure(gg,'bench',`${g.label}｜作答效度`,`N＝${g.st.n}`,validCfg(g.st),1.4);
     const hw=el('div');hw.style.marginTop='12px';out.append(hw);hw.append(hlTable(g.st));
