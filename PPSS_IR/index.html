@@ -399,15 +399,18 @@ function figure(parent,tab,title,subtitle,config,ratio=1.5){
   btn.addEventListener('click',()=>new Promise(r=>cv.toBlob(r,'image/png')).then(b=>save(b,fname)));
   return fig;
 }
-function pieCfg(labels,data,colors){
-  const tot=data.reduce((a,b)=>a+b,0);
-  return {type:'pie',data:{labels,datasets:[{data,backgroundColor:colors||labels.map((_,i)=>PAL[i%PAL.length]),borderColor:'#fff',borderWidth:2}]},
-    options:{plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:12}},
-      datalabels:{display:ctx=>tot&&ctx.dataset.data[ctx.dataIndex]/tot>=.04,color:'#fff',font:{weight:'700',size:12},textAlign:'center',
-        formatter:v=>`${v}人\n${(v/tot*100).toFixed(1)}%`}}}};
+// 背景資訊圓餅：照 Excel 版——每張圖一個色系，第一塊最深、依序變淺
+const PIE_HUES = {'性別':'#c0453a','學歷':'#be9630','年齡區間':'#4a76e0','世代':'#df6a2a'};
+const PIE_EXTRA = ['#3d9a5a','#7b5bc4','#2a9d9a','#c2477f','#5d6f86'];
+function pieShades(base,k){const top=Math.min(.8,.4+.1*Math.max(k-2,0));return Array.from({length:k},(_,i)=>shade(base,k>1?top*i/(k-1):0))}
+function pieCfg(labels,data,base='#c0453a'){
+  const tot=data.reduce((a,b)=>a+b,0);const cols=pieShades(base,labels.length);
+  return {type:'pie',data:{labels,datasets:[{data,backgroundColor:cols,borderColor:'#fff',borderWidth:1.5}]},
+    options:{plugins:{legend:{position:'bottom',labels:{boxWidth:10,boxHeight:10,padding:12,font:{size:14}}},
+      datalabels:{display:ctx=>tot&&ctx.dataset.data[ctx.dataIndex]/tot>=.03,color:ctx=>inkOn(cols[ctx.dataIndex]),
+        font:c=>({size:Math.round(Math.max(12,Math.min(18,c.chart.width/24))),weight:'500'}),textAlign:'center',lineHeight:1.5,
+        formatter:(v,ctx)=>`${labels[ctx.dataIndex]},\n${v}, ${Math.round(v/tot*100)}%`}}}};
 }
-// 行為類型圓餅：照 Excel 版配色（上淺下深漸層），類型名＋百分比直接標在扇形上
-const TYPE_GRAD = [['#bccbf4','#8ea8ee'],['#f1b8b6','#e4898a'],['#fce3ae','#f6cd78'],['#b9dcb3','#8cc485'],['#f6c4ae','#efa07f']];
 function typePieCfg(st){
   const grad=(ctx)=>{const c=ctx.chart,a=c.chartArea,j=ctx.dataIndex;if(!a)return TYPE_GRAD[j][1];
     const g=c.ctx.createLinearGradient(0,a.top,0,a.bottom);g.addColorStop(0,TYPE_GRAD[j][0]);g.addColorStop(1,TYPE_GRAD[j][1]);return g};
@@ -509,9 +512,11 @@ function renderBg(){
   const deptF=S.benchFields.find(f=>/^P:\[自訂\].*部門/.test(f));
   if(deptF)specs.push([deptF,fieldLabel(deptF),null]);
   for(const f of S.extraPies)specs.push([f,fieldLabel(f),null,true]);
+  let xi=0;
   for(const [f,t,order,removable] of specs){
     const c=countBy(S.all,f,order);
-    const fig=figure(g,'bg',t,`N＝${N}`,pieCfg(c.labels,c.data),1.1);
+    const hue=PIE_HUES[t.replace(/（.*）/,'')]||PIE_EXTRA[xi++%PIE_EXTRA.length];
+    const fig=figure(g,'bg',t,`N＝${N}`,pieCfg(c.labels,c.data,hue),1.1);
     if(removable){const rm=el('button',{class:'btn',type:'button',text:'移除',onclick:()=>{S.extraPies=S.extraPies.filter(x=>x!==f);render()}});fig.querySelector('.foot').prepend(rm);rm.style.marginRight='auto'}
   }
 }
