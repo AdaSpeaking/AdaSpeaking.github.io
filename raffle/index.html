@@ -9,22 +9,22 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700;900&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
-/* Layout: 舞台式單一深色畫面（投影用）— 上方獎項軌道，中央抽獎券，底部單一主按鈕；設定與名單分頁 */
+/* Layout: 舞台式單一淺綠畫面（投影用）— 上方獎項軌道，中央抽獎券，底部單一主按鈕；設定與名單分頁 */
 :root{
-  --bg:#0f2236;        /* 深藍舞台 */
-  --bg-2:#162e47;      /* 面板 */
-  --line:#2a4763;
+  --bg:#78d568;        /* 淺綠舞台 */
+  --bg-2:#8ee07f;      /* 面板 */
+  --line:#2e5c33;
   --paper:#f3ead9;     /* 抽獎券紙色 */
   --ink:#1a2433;       /* 券上墨色 */
-  --fg:#eef1f4;
-  --muted:#9fb2c6;
-  --accent:#f2a93b;    /* 金盞花橘 */
-  --accent-ink:#2a1a00;
-  --warn:#ff8a7a;
+  --fg:#14261a;
+  --muted:#2f5a34;
+  --accent:#1d4a27;    /* 深綠 */
+  --accent-ink:#f3ead9;
+  --warn:#a3271a;
   --f-display:"Noto Serif TC","Songti TC","PMingLiU",serif;
   --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
-  color-scheme:dark;
+  color-scheme:light;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -38,7 +38,7 @@ button{cursor:pointer}
 /* top bar */
 .bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;border-bottom:1px solid var(--line);padding-bottom:12px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1 1 240px}
-.brand-mark{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(242,169,59,.18);flex:none}
+.brand-mark{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(29,74,39,.18);flex:none}
 #evtTitle{background:transparent;border:0;border-bottom:1px dashed transparent;font-family:var(--f-display);font-weight:900;font-size:1.25rem;letter-spacing:.04em;min-width:0;width:100%;padding:2px 0}
 #evtTitle:hover,#evtTitle:focus{border-bottom-color:var(--line);outline:none}
 .tabs{display:flex;gap:4px;background:var(--bg-2);padding:4px;border-radius:10px;border:1px solid var(--line)}
@@ -107,7 +107,7 @@ button{cursor:pointer}
 textarea{background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:280px;resize:vertical;line-height:1.55;font-size:.92rem}
 textarea.short{min-height:120px}
 .count{font-family:var(--f-mono);color:var(--accent)}
-.banner{grid-column:1/-1;border:1px solid var(--accent);background:rgba(242,169,59,.08);border-radius:10px;padding:10px 14px;font-size:.9rem;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+.banner{grid-column:1/-1;border:1px solid var(--accent);background:rgba(29,74,39,.08);border-radius:10px;padding:10px 14px;font-size:.9rem;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
 .preview{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:.88rem}
 .preview li{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:4px 0}
 .preview .mode{color:var(--muted);font-size:.8rem;white-space:nowrap}
@@ -123,12 +123,12 @@ td.absent{color:var(--muted);text-decoration:line-through}
 #copyFallback{width:100%;min-height:120px;margin-top:12px}
 
 /* modal */
-.modal{position:fixed;inset:0;background:rgba(5,12,20,.7);display:grid;place-items:center;padding:16px;z-index:10}
+.modal{position:fixed;inset:0;background:rgba(10,30,14,.55);display:grid;place-items:center;padding:16px;z-index:10}
 .modal-card{background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:22px;max-width:380px;width:100%;display:flex;flex-direction:column;gap:14px}
 .modal-card h3{margin:0;font-size:1.1rem}
 .modal-card p{margin:0;color:var(--muted);font-size:.92rem}
 .row{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
-.danger{border:0;background:var(--warn);color:#2b0700;font-weight:700;border-radius:8px;padding:8px 16px}
+.danger{border:0;background:var(--warn);color:#fff;font-weight:700;border-radius:8px;padding:8px 16px}
 
 :fullscreen .hint{display:none}
 @media (prefers-reduced-motion:reduce){.ticket.landed{animation:none}}
